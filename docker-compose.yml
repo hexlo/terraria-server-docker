@@ -1,0 +1,34 @@
+version: '3'
+services: 
+  terraria-server:
+    image: iceoid/terraria-server:latest
+    container_name: terraria-server
+    restart: unless-stopped
+    stdin_open: true
+    tty: true     
+    ports:
+      - 7779:7777
+    volumes: 
+      - ./worlds:/root/.local/share/Terraria/Worlds/
+    environment:
+      - world=/root/.local/share/Terraria/Worlds/newworld.wld # Default is empty, so no world is loaded
+      - maxplayers=8 # Default is 16
+      - port=7777 # Default is 7777
+      - password=passworld # Default is empty (no password)
+
+
+  terraria-hamlet:
+    image: iceoid/terraria-server:latest
+    container_name: terraria-hamlet
+    restart: unless-stopped
+    stdin_open: true
+    tty: true     
+    ports:
+      - 7778:7777
+    volumes: 
+      - ./worlds:/root/.local/share/Terraria/Worlds/
+    environment:
+      - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
+      - password=hamlet
+      - maxplayers=8
+      - motd="Welcome to North's server! :)"
