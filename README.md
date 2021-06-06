@@ -1,46 +1,65 @@
 # Terraria vanilla server
 
-### Put your worlds in the worlds folder
-### When you create a container, map the port to 7777 internally, ie.: 1234:7777 (then forward port to 1234 in this case)
-### add a volume for the worlds mounted inside the container:
-`./worlds:/root/.local/share/Terraria/Worlds/`
 
-### Setup the server:
-#####You can create a new world or select diffent world (located in the world folder above) by starting a container and attaching to it
-`docker attach <container-name>`\
-##### press enter
-##### choose the options you wish
-### To dettach without stopping the container:
+### General Config
+- Have a `worlds` folder at the root of your directory structure (you can have it anywhere, but change the volume binds accordingly)
+- Put your worlds in the worlds folder
+- When you create a container, map the port to 7777 internally, ie.: 1234:7777 (then forward port to 1234 in this case)
+- Add a volume for the worlds mounted inside the container:
+`./worlds:/root/.local/share/Terraria/Worlds/`\
+- You can create a new world or select different world (located in the world folder above) by starting a container and attaching to it
+`docker attach <container-name>`
+- press enter
+- choose the options you wish
+
+To dettach without stopping the container:
 `ctrl+p ctrl+q`
+
 
 ### docker-compose.yml exemple:
 ```
 version: '3'
-services: 
+services:
   terraria-server:
-    image: iceoid/terraria-server:1.4.1.2
+    image: iceoid/terraria-server:1.4.2.2
     container_name: terraria-server
     restart: unless-stopped
     stdin_open: true
     tty: true
     ports:
-      - 7770:7777
-    volumes: 
+      - 7779:7777
+    volumes:
       - ./worlds:/root/.local/share/Terraria/Worlds/
+    environment:
+      - world=/root/.local/share/Terraria/Worlds/newworld.wld # Default is empty, so no world is loaded
+      - maxplayers=8 # Default is 16
+      - port=7777 # Default is 7777
+      - password=newworld # Default is passworld
 ```
-### environment variables used:
-`SERVER_NAME: names the directory of the server. (default is terraria-server)`\
-`DOWNLOAD_URL: direct url to the terraria server download. This tends to change.`
 
-### From the [official documentation](https://terraria.fandom.com/wiki/Server#Server_files)
-```Server files
-The server consists of three files:
 
-TerrariaServer.exe - The main server file. Can be run stand-alone.
-serverconfig.txt - The server config files. Defines all parameters for the server (see below).
-start-server.bat - A Windows Batch file which starts the server using the serverconfig.txt file. Also contains a loopback to restart the server if it should crash.
-start-server-steam-friends.bat - functions as "Host & Play" would, but through the console. steam friends will be able to join your game through this.
-List of console commands
+### environment variables (case-sensitive!):
+| Env variable | Default value | Description |
+| :------------- | :----------: | :----------- |
+|  `world` | *empty* | Absolute path to your world |
+| `maxplayers` | 16 | The maximum number of players allowed |
+| `port` | 7777 | Port used internally by the terraria server |
+| `password` | *empty*  | Set a password for the server |
+| `SERVER_NAME` | terraria-server | Name of the folder created in the container |
+| `DOWNLOAD_URL` | *depends on the tag version* |  [URL](https://terraria.fandom.com/wiki/Server#Downloads) to the appropriate server version, depending on the tag |
+
+
+### Important!
+If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually.
+
+1. `docker attach <container name>`
+2. press _*enter*_
+3. Go through the options
+4. Detach from the container by pressing _*ctrl+p*_ _*ctrl+q*_
+
+
+### List of server-side console commands from the [official documentation](https://terraria.fandom.com/wiki/Server#Server_files)
+```
 Once a dedicated server is running, the following commands can be run:
 
 help - Displays a list of commands.
