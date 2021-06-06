@@ -39,26 +39,33 @@ services:
 
 
 ### environment variables (case-sensitive!):
-| Env variable | Possible values (Default value) | Description | Example |
+| Env variable | Default value | Description | Example |
 | :------------- | :----------: | :----------- | :----------- |
-|  `world` | (*empty*) | Absolute path to your world | `world=/path/to/world_dir/` |
+| `world` | (*empty*) | Load a world and automatically start the server. | `world=/path/to/world_dir/` |
+| `autocreate` | (*empty*) | Creates a world if none is found in the path specified by -world. World size is specified by: 1(small), 2(medium), and 3(large). | `autocreate=2` |
+| `seed` | (*empty*) | Specifies the world seed when using -autocreate | `seed=someseed123` |
+| `worldname` | (*empty*) | Sets the name of the world when using -autocreate. | `worldname=world1` |
+| `difficulty` | 0 | Sets world difficulty when using -autocreate. Options: 0(normal), 1(expert), 2(master), 3(journey) | `difficulty=1` |
 | `maxplayers` | 16 | The maximum number of players allowed |  `maxplayers=8` |
 | `port` | 7777 | Port used internally by the terraria server | `port=8123` |
 | `password` | *empty*  | Set a password for the server | `password=serverpassword` |
+| `motd` | (*empty*) | Set the server motto of the day text. | `motd=Welcome to my private server! :)` |
+| `worldpath` | /root/.local/share/Terraria/Worlds | Sets the folder where world files will be stored | `worldpath=/root/.local/share/Terraria/Worlds` |
+| `banlist` | (*empty*) | The location of the banlist. Defaults to "banlist.txt" in the working directory. | `banlist=banlist.txt ` |
 | `secure` | 1 | Option to prevent cheats. (1: no cheats or 0: cheats allowed) | `secure=0` |
-|`motd` | (*empty*) | Set the server motto of the day text. | `motd=Welcome to my private server! :)` |
-|`autocreate` | (*empty*) | Creates a world if none is found in the path specified by -world. World size is specified by: 1(small), 2(medium), and 3(large). | `autocreate=2` |
-| `banlist` | (*empty*) | Specifies the location of the banlist. Defaults to "banlist.txt" in the working directory. (You need to add a volume bind accordingly) | `banlist=./banlist.txt ` |
--worldname <world name> - Sets the name of the world when using -autocreate.
--secure - Adds additional cheat protection to the server.
--noupnp - Disables automatic universal plug and play.
--steam - Enables Steam support.
--lobby friends / -lobby private - Allows only friends to join the server or sets it to private if Steam is enabled.
--ip <ip address> - Sets the IP address for the server to listen on
--forcepriority <priority> - Sets the process priority for this task. If this is used the "priority" setting below will be ignored.
--disableannouncementbox - Disables the text announcements Announcement Box makes when pulsed from wire.
--announcementboxrange <number> - Sets the announcement box text messaging range in pixels, -1 for serverwide announcements.
--seed <seed> - Specifies the world seed when using -autocreate
+| `language` | en/US | Sets the server language from its language code. Available codes: en/US = English
+de/DE = German
+it/IT = Italian
+fr/FR = French
+es/ES = Spanish
+ru/RU = Russian
+zh/Hans = Chinese
+pt/BR = Portuguese
+pl/PL = Polish | `language=fr/FR` |
+| `upnp` | 0 | Enables/disables automatic universal plug and play. | `upnp=1` |
+| `npcstream` | 0 | Reduces enemy skipping but increases bandwidth usage. The lower the number the less skipping will happen, but more data is sent. 0 is off. | `npcstream=1` |
+| `priority` | (*empty*) | Sets the process priority | `priority=1` |
+
 
 
 
