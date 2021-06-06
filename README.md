@@ -48,20 +48,12 @@ services:
 | `difficulty` | 0 | Sets world difficulty when using -autocreate. Options: 0(normal), 1(expert), 2(master), 3(journey) | `difficulty=1` |
 | `maxplayers` | 16 | The maximum number of players allowed |  `maxplayers=8` |
 | `port` | 7777 | Port used internally by the terraria server | `port=8123` |
-| `password` | *empty*  | Set a password for the server | `password=serverpassword` |
+| `password` | (*empty*)  | Set a password for the server | `password=serverpassword` |
 | `motd` | (*empty*) | Set the server motto of the day text. | `motd=Welcome to my private server! :)` |
 | `worldpath` | /root/.local/share/Terraria/Worlds | Sets the folder where world files will be stored | `worldpath=/root/.local/share/Terraria/Worlds` |
 | `banlist` | (*empty*) | The location of the banlist. Defaults to "banlist.txt" in the working directory. | `banlist=banlist.txt ` |
 | `secure` | 1 | Option to prevent cheats. (1: no cheats or 0: cheats allowed) | `secure=0` |
-| `language` | en/US | Sets the server language from its language code. Available codes: en/US = English
-de/DE = German
-it/IT = Italian
-fr/FR = French
-es/ES = Spanish
-ru/RU = Russian
-zh/Hans = Chinese
-pt/BR = Portuguese
-pl/PL = Polish | `language=fr/FR` |
+| `language` | en/US | Sets the server language from its language code. Available codes:  `en/US = English` `de/DE = German` `it/IT = Italian` `fr/FR = French` `es/ES = Spanish` `ru/RU = Russian` `zh/Hans = Chinese` `pt/BR = Portuguese` `pl/PL = Polish` | `language=fr/FR` |
 | `upnp` | 0 | Enables/disables automatic universal plug and play. | `upnp=1` |
 | `npcstream` | 0 | Reduces enemy skipping but increases bandwidth usage. The lower the number the less skipping will happen, but more data is sent. 0 is off. | `npcstream=1` |
 | `priority` | (*empty*) | Sets the process priority | `priority=1` |
