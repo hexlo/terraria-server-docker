@@ -15,7 +15,7 @@ services:
       - maxplayers=8 # Default is 16
       - port=7777 # Default is 7777
       - password=passworld # Default is empty (no password)
-
+      - npcstream=5
 
   terraria-hamlet:
     image: iceoid/terraria-server:latest
@@ -32,3 +32,4 @@ services:
       - password=hamlet
       - maxplayers=8
       - motd="Welcome to North's server! :)"
+      - npcstream=5
