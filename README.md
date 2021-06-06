@@ -39,14 +39,27 @@ services:
 
 
 ### environment variables (case-sensitive!):
-| Env variable | Default value | Description |
-| :------------- | :----------: | :----------- |
-|  `world` | *empty* | Absolute path to your world |
-| `maxplayers` | 16 | The maximum number of players allowed |
-| `port` | 7777 | Port used internally by the terraria server |
-| `password` | *empty*  | Set a password for the server |
-| `SERVER_NAME` | terraria-server | Name of the folder created in the container |
-| `DOWNLOAD_URL` | *depends on the tag version* |  [URL](https://terraria.fandom.com/wiki/Server#Downloads) to the appropriate server version, depending on the tag |
+| Env variable | Possible values (Default value) | Description | Example |
+| :------------- | :----------: | :----------- | :----------- |
+|  `world` | (*empty*) | Absolute path to your world | `world=/path/to/world_dir/` |
+| `maxplayers` | 16 | The maximum number of players allowed |  `maxplayers=8` |
+| `port` | 7777 | Port used internally by the terraria server | `port=8123` |
+| `password` | *empty*  | Set a password for the server | `password=serverpassword` |
+| `secure` | 1 | Option to prevent cheats. (1: no cheats or 0: cheats allowed) | `secure=0` |
+|`motd` | (*empty*) | Set the server motto of the day text. | `motd=Welcome to my private server! :)` |
+|`autocreate` | (*empty*) | Creates a world if none is found in the path specified by -world. World size is specified by: 1(small), 2(medium), and 3(large). | `autocreate=2` |
+| `banlist` | (*empty*) | Specifies the location of the banlist. Defaults to "banlist.txt" in the working directory. (You need to add a volume bind accordingly) | `banlist=./banlist.txt ` |
+-worldname <world name> - Sets the name of the world when using -autocreate.
+-secure - Adds additional cheat protection to the server.
+-noupnp - Disables automatic universal plug and play.
+-steam - Enables Steam support.
+-lobby friends / -lobby private - Allows only friends to join the server or sets it to private if Steam is enabled.
+-ip <ip address> - Sets the IP address for the server to listen on
+-forcepriority <priority> - Sets the process priority for this task. If this is used the "priority" setting below will be ignored.
+-disableannouncementbox - Disables the text announcements Announcement Box makes when pulsed from wire.
+-announcementboxrange <number> - Sets the announcement box text messaging range in pixels, -1 for serverwide announcements.
+-seed <seed> - Specifies the world seed when using -autocreate
+
 
 
 ### Important!
