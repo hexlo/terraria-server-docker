@@ -9,7 +9,7 @@ ENV FOLDER_NUMBER=1423
 
 ENV DOWNLOAD_URL=https://terraria.org/system/dedicated_servers/archives/000/000/046/original/terraria-server-1423.zip
 
-ENV SELF_HOSTED_DOWNLOAD_URL=https://raw.githubusercontent.com/Iceoid/FileShare/terraria-server-1423.tar
+ENV SELF_HOSTED_DOWNLOAD_URL=https://raw.githubusercontent.com/Iceoid/FileShare/main/terraria-server-1423.tar
 
 ENV port=7777
 
