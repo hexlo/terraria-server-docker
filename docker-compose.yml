@@ -1,4 +1,4 @@
-version: '3'
+version: '3.2'
 services: 
   terraria-server:
     image: iceoid/terraria-server:latest
@@ -8,8 +8,10 @@ services:
     tty: true     
     ports:
       - 7779:7777
-    volumes: 
-      - ./worlds:/root/.local/share/Terraria/Worlds/
+    volumes:
+      - type: bind
+        source: ${DOCKER_CONFIGS_DIR}/terraria/worlds
+        target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/newworld.wld # Default is empty, so no world is loaded
       - maxplayers=8 # Default is 16
@@ -26,7 +28,9 @@ services:
     ports:
       - 7778:7777
     volumes: 
-      - ./worlds:/root/.local/share/Terraria/Worlds/
+      - type: bind
+        source: ${DOCKER_CONFIGS_DIR}/terraria/worlds
+        target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
       - password=hamlet
