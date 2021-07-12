@@ -14,11 +14,10 @@ services:
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - worldpath=/root/.local/share/Terraria/Worlds/newworld.wld
-      - maxplayers=8 # Default is 16
-      - port=7777 # Default is 7777
-      - password=passworld # Default is empty (no password)
+      - maxplayers=8
+      - port=7777
+      - password=passworld
       - motd="Welcome to North's server! :)"
-      - npcstream=5
 
   terraria-hamlet:
     image: iceoid/terraria-server:latest
@@ -37,4 +36,3 @@ services:
       - password=hamlet
       - maxplayers=8
       - motd="Welcome to North's server! :)"
-      - npcstream=5
