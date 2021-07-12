@@ -23,7 +23,7 @@ ENV secure=1
 
 ENV language=en/US
 
-ENV worldpath
+ENV worldpath=/root/.local/share/Terraria/Worlds/newworld.wld
 
 RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
 #    && wget -O terraria-server.zip ${DOWNLOAD_URL} \
