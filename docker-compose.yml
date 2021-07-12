@@ -13,7 +13,7 @@ services:
         source: ${DOCKER_CONFIGS_DIR}/terraria/worlds
         target: /root/.local/share/Terraria/Worlds/
     environment:
-      - worldpath=/root/.local/share/Terraria/Worlds/newworld.wld
+      - world=/root/.local/share/Terraria/Worlds/newworld.wld
       - maxplayers=8
       - port=7777
       - password=passworld
@@ -32,7 +32,7 @@ services:
         source: ${DOCKER_CONFIGS_DIR}/terraria/worlds
         target: /root/.local/share/Terraria/Worlds/
     environment:
-      - worldpath=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
+      - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
       - password=hamlet
       - maxplayers=8
       - motd="Welcome to North's server! :)"
