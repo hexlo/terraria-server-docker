@@ -23,7 +23,7 @@ ENV secure=1
 
 ENV language=en/US
 
-ENV worldpath=/root/.local/share/Terraria/Worlds/
+ENV worldpath
 
 
 RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
@@ -31,8 +31,8 @@ RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
 #    && unzip terraria-server.zip -d ${SERVER_NAME} && rm terraria-server.zip && rm -Rf ${SERVER_NAME}/${FOLDER_NUMBER}/Windows ${SERVER_NAME}/${FOLDER_NUMBER}/Mac \
 #    && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux/ \
     && wget -O terraria-server.zip ${SELF_HOSTED_DOWNLOAD_URL} \
-    && tar -xf terraria-server.zip \
-    && cd terraria-server/1423/Linux/ \
+    && tar -xf terraria-server.zip -C ${SERVER_NAME}\
+    && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux/ \
     && chmod +x TerrariaServer.bin.x86_64* \
 #    && touch server-config.conf \
 #    && echo 'world=${worldpath}' > server-config.conf \
