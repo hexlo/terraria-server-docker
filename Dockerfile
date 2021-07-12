@@ -25,7 +25,6 @@ ENV language=en/US
 
 ENV worldpath
 
-
 RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
 #    && wget -O terraria-server.zip ${DOWNLOAD_URL} \
 #    && unzip terraria-server.zip -d ${SERVER_NAME} && rm terraria-server.zip && rm -Rf ${SERVER_NAME}/${FOLDER_NUMBER}/Windows ${SERVER_NAME}/${FOLDER_NUMBER}/Mac \
