@@ -13,10 +13,11 @@ services:
         source: ${DOCKER_CONFIGS_DIR}/terraria/worlds
         target: /root/.local/share/Terraria/Worlds/
     environment:
-      - world=/root/.local/share/Terraria/Worlds/newworld.wld # Default is empty, so no world is loaded
+      - worldpath=/root/.local/share/Terraria/Worlds/newworld.wld # Default is empty, so no world is loaded
       - maxplayers=8 # Default is 16
       - port=7777 # Default is 7777
       - password=passworld # Default is empty (no password)
+      - motd="Welcome to North's server! :)"
       - npcstream=5
 
   terraria-hamlet:
@@ -32,7 +33,7 @@ services:
         source: ${DOCKER_CONFIGS_DIR}/terraria/worlds
         target: /root/.local/share/Terraria/Worlds/
     environment:
-      - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
+      - worldpath=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
       - password=hamlet
       - maxplayers=8
       - motd="Welcome to North's server! :)"
