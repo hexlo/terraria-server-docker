@@ -73,5 +73,5 @@ VOLUME ["/root/.local/share/Terraria/Worlds/"]
 
 WORKDIR ${SERVER_NAME}/${FOLDER_NUMBER}/Linux
 
-CMD ["sh", "-c", "./init.sh"]
+ENTRYPOINT [ "./init.sh" ]
 
