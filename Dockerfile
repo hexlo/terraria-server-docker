@@ -23,7 +23,7 @@ ENV secure=1
 
 ENV language=en/US
 
-ENV worldpath=/root/.local/share/Terraria/Worlds/
+ENV worldpath=
 
 
 RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
