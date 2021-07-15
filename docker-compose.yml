@@ -33,6 +33,7 @@ services:
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
-      - password=hamlet
       - maxplayers=8
+      - port=7777
+      - password=hamlet
       - motd="Welcome to North's server! :)"
