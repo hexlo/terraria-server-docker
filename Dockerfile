@@ -15,15 +15,13 @@ ENV SELF_HOSTED_DOWNLOAD_URL=https://raw.githubusercontent.com/Iceoid/FileShare/
 
 ENV DOCS_URL=https://terraria.fandom.com/wiki/Server
 
-ENV world=/root/.local/share/Terraria/Worlds/newworld.wld
-
 ENV autocreate=2
 
 ENV seed=celebrationmk10
 
 ENV worldname=TerrariaWorld
 
-ENV difficulty=2
+ENV difficulty=0
 
 ENV maxplayers=16
 
