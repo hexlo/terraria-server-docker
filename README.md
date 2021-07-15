@@ -15,7 +15,7 @@
 To dettach without stopping the container:
 `ctrl+p ctrl+q`
 
-#####_*Important: if you want the server to start automatically, you need to provide a world path bydefining the environment variable `world` as shown bellow.*_
+##### _*Important: if you want the server to start automatically, you need to provide a world path bydefining the environment variable `world` as shown bellow.*_
 ### docker-compose.yml exemple:
 ```
 version: '3'
