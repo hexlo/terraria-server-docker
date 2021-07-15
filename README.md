@@ -72,7 +72,7 @@ If the `world` variable is left empty or not included, the server will need to b
 
 ### List of server-side console commands from the [official documentation](https://terraria.fandom.com/wiki/Server#Server_files)
 
-Once a dedicated server is running, the following commands can be run.
+Once a dedicated server is running, the following commands can be run.\
 First, attach to the container with `docker attach <container name>`.
 ```
 
