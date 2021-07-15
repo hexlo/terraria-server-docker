@@ -1,6 +1,7 @@
 #!/bin/bash
 
 touch server-config.conf
+echo > server-config.conf
 
 if [[ ! -z "${world}" ]]; then
     echo "world=${world}" >> server-config.conf
