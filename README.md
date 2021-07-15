@@ -74,35 +74,35 @@ If the `world` variable is left empty or not included, the server will need to b
 
 Once a dedicated server is running, the following commands can be run.
 First, attach to the container with `docker attach <container name>`.
+```
 
-
-`help` - Displays a list of commands.
-`playing` - Shows the list of players. This can be used in-game by typing /playing into the chat.
-`clear` - Clear the console window.
-`exit` - Shutdown the server and save.
-`exit-nosave` - Shutdown the server without saving.
-`save` - Save the game world.
-`kick <player name>` - Kicks a player from the server.
-`ban <player name>` - Bans a player from the server.
-`password` - Show password.
-`password <pass>` - Change password.
-`version` - Print version number.
-`time` - Display game time.
-`port` - Print the listening port.
-`maxplayers` - Print the max number of players.
-`say <message>` - Send a message to all players. They will see the message in yellow prefixed with <server> in the chat.
-`motd` - Print MOTD.
-`motd <message>` - Change MOTD.
-`dawn` - Change time to dawn (4:30 AM).
-`noon` - Change time to noon (12:00 PM).
-`dusk` - Change time to dusk (7:30 PM).
-`midnight` - Change time to midnight (12:00 AM).
-`settle` - Settle all water.
+help - Displays a list of commands.
+playing - Shows the list of players. This can be used in-game by typing /playing into the chat.
+clear - Clear the console window.
+exit - Shutdown the server and save.
+exit-nosave - Shutdown the server without saving.
+save - Save the game world.
+kick <player name> - Kicks a player from the server.
+ban <player name> - Bans a player from the server.
+password - Show password.
+password <pass> - Change password.
+version - Print version number.
+time - Display game time.
+port - Print the listening port.
+maxplayers - Print the max number of players.
+say <message> - Send a message to all players. They will see the message in yellow prefixed with <server> in the chat.
+motd - Print MOTD.
+motd <message> - Change MOTD.
+dawn - Change time to dawn (4:30 AM).
+noon - Change time to noon (12:00 PM).
+dusk - Change time to dusk (7:30 PM).
+midnight - Change time to midnight (12:00 AM).
+settle - Settle all water.
 
 Banning and un-banning
 The command ban <player> will ban the indicated player from the server. A banned player, when they try to login, will be displayed the message:You are banned for [duration]: [reason]- [modname]. A banned player may then be un-banned by editing the file "banlist.txt," which is located in the Terraria folder. This document contains a list of all currently banned players. To un-ban a player, delete the player's name and IP address from the list.
 
-
+```
 Note: no forward-slash `/` is needed before the command, as some command interfaces require.
 
 
