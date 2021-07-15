@@ -2,7 +2,7 @@
 
 touch server-config.conf
 touch banlist.txt
-echo "world=${world}" > server-config.conf
+echo 'world=${world}' > server-config.conf
 echo 'autocreate=${autocreate}' >> server-config.conf
 echo 'seed=${seed}' >> server-config.conf
 echo 'worldname=${worldname}' >> server-config.conf
