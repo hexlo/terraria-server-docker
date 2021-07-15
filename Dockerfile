@@ -55,7 +55,7 @@ RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
     && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux \
     # && wget -O terraria-server.zip ${SELF_HOSTED_DOWNLOAD_URL} \
     # && tar -xf terraria-server.zip -C ${SERVER_NAME} --strip-components=1\
-    && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux \
+    # && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux \
     && chmod +x TerrariaServer.bin.x86_64* 
    
 COPY ./init.sh ${SERVER_NAME}/${FOLDER_NUMBER}/Linux
