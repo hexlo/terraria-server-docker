@@ -2,7 +2,7 @@
 
 touch server-config.conf
 touch banlist.txt
-echo 'world=${world}' > server-config.conf
+echo "world=${world}" > server-config.conf
 echo 'autocreate=${autocreate}' >> server-config.conf
 echo 'seed=${seed}' >> server-config.conf
 echo 'worldname=${worldname}' >> server-config.conf
@@ -19,6 +19,6 @@ echo 'upnp=${upnp}' >> server-config.conf
 echo 'npcstream=${npcstream}' >> server-config.conf
 echo 'priority=${priority}' >> server-config.conf
 
-envsubst < server-config.conf | tee server-config.conf;
+cat server-config.conf | envsubst | tee server-config.conf;
 
 ./TerrariaServer.bin.x86_64 -config server-config.conf
