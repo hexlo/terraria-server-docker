@@ -47,7 +47,7 @@ ENV npcstream=5
 
 ENV priority=1
 
-COPY ./init.sh .
+COPY init.sh .
 
 RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
     && wget -O terraria-server.zip ${DOWNLOAD_URL} \
@@ -58,13 +58,13 @@ RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
     # && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux \
     && chmod +x TerrariaServer.bin.x86_64* 
 
-WORKDIR ${SERVER_NAME}/${FOLDER_NUMBER}/Linux
+COPY ./init.sh /${SERVER_NAME}/${FOLDER_NUMBER}/Linux
 
-COPY ./init.sh .
-
-RUN chmod +x init.sh
+RUN chmod +x /${SERVER_NAME}/${FOLDER_NUMBER}/Linux/init.sh
 
 VOLUME ["/root/.local/share/Terraria/Worlds/"]
+
+WORKDIR ${SERVER_NAME}/${FOLDER_NUMBER}/Linux
 
 ENTRYPOINT [ "./init.sh" ]
 
