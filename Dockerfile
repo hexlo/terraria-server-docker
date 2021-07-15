@@ -57,14 +57,14 @@ RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
     # && tar -xf terraria-server.zip -C ${SERVER_NAME} --strip-components=1\
     # && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux \
     && chmod +x TerrariaServer.bin.x86_64* 
-   
-COPY ./init.sh ${SERVER_NAME}/${FOLDER_NUMBER}/Linux
+
+WORKDIR ${SERVER_NAME}/${FOLDER_NUMBER}/Linux
+
+COPY ./init.sh .
 
 RUN chmod +x init.sh
 
 VOLUME ["/root/.local/share/Terraria/Worlds/"]
-
-WORKDIR ${SERVER_NAME}/${FOLDER_NUMBER}/Linux
 
 ENTRYPOINT [ "./init.sh" ]
 
