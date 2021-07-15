@@ -25,6 +25,6 @@ echo "secure=${secure}" >> server-config.conf
 echo "language=${language}" >> server-config.conf
 echo "upnp=${upnp}" >> server-config.conf
 echo "npcstream=${npcstream}" >> server-config.conf
-echo "priority=${priority}" >> server-config.conf
+echo "priority=${priority}" >> server-config.conf;
 
 ./TerrariaServer.bin.x86_64 -config server-config.conf
