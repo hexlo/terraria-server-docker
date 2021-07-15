@@ -71,7 +71,7 @@ If the `world` variable is left empty or not included, the server will need to b
 
 
 ### List of server-side console commands from the [official documentation](https://terraria.fandom.com/wiki/Server#Server_files)
-```
+
 Once a dedicated server is running, the following commands can be run.
 First, attach to the container with `docker attach <container name>`.
 
@@ -102,7 +102,7 @@ First, attach to the container with `docker attach <container name>`.
 Banning and un-banning
 The command ban <player> will ban the indicated player from the server. A banned player, when they try to login, will be displayed the message:You are banned for [duration]: [reason]- [modname]. A banned player may then be un-banned by editing the file "banlist.txt," which is located in the Terraria folder. This document contains a list of all currently banned players. To un-ban a player, delete the player's name and IP address from the list.
 
-```
+
 Note: no forward-slash `/` is needed before the command, as some command interfaces require.
 
 
