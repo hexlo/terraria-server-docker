@@ -3,7 +3,7 @@ services:
   terraria-server:
     image: iceoid/terraria-server:latest
     container_name: terraria-server
-    restart: unless-stopped
+    restart: always
     stdin_open: true
     tty: true     
     ports:
@@ -22,7 +22,7 @@ services:
   terraria-hamlet:
     image: iceoid/terraria-server:latest
     container_name: terraria-hamlet
-    restart: unless-stopped
+    restart: always
     stdin_open: true
     tty: true     
     ports:
