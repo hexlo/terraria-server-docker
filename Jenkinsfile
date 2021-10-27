@@ -1,5 +1,6 @@
 pipeline {
   environment {
+    gitRepo = "https://github.com/Iceoid/terraria-server-docker.git"
     imageName = "terraria-server-docker"
     dockerhubRegistry = "iceoid/terraria-server"
     githubRegistry = "ghcr.io/iceoid/$imageName"
@@ -14,7 +15,7 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
-        git branch: 'main', credentialsId: 'GITHUB_TOKEN', url: 'https://github.com/Iceoid/minecraft-bedrock-server.git'
+        git branch: 'main', credentialsId: 'GITHUB_TOKEN', url: gitRepo
       }
     }
     stage('Building image') {
