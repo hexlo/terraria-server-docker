@@ -7,7 +7,7 @@
 ```
 
 # Terraria vanilla server
-
+.
 
 ### General Config
 - Have a `worlds` folder at the root of your directory structure (you can have it anywhere, but change the volume binds accordingly)
