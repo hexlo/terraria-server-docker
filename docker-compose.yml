@@ -1,39 +1,77 @@
 version: '3.2'
 services: 
   terraria-server:
-    image: iceoid/terraria-server:latest
+    image: ghcr.io/hexlo/terraria-server-docker:latest
     container_name: terraria-server
     restart: always
+    networks:
+      - traefik_net
     stdin_open: true
     tty: true     
     ports:
       - 7779:7777
     volumes:
       - type: bind
-        source: ${DOCKER_CONFIGS_DIR}/terraria/worlds
+        source: ./worlds
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/newworld.wld
       - maxplayers=8
       - port=7777
       - password=passworld
+      - secure=1
+      - npcstream=1
       - motd="Welcome to North's server! :)"
 
   terraria-hamlet:
-    image: iceoid/terraria-server:latest
+    image: ghcr.io/hexlo/terraria-server-docker:latest
     container_name: terraria-hamlet
     restart: always
+    networks:
+      - traefik_net
     stdin_open: true
     tty: true     
     ports:
       - 7778:7777
     volumes: 
       - type: bind
-        source: ${DOCKER_CONFIGS_DIR}/terraria/worlds
+        source: ./worlds
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
       - maxplayers=8
       - port=7777
       - password=hamlet
+      - secure=1
+      - npcstream=1
       - motd="Welcome to North's server! :)"
+
+  terraria-MasterWorld:
+    image: ghcr.io/hexlo/terraria-server-docker:latest
+    container_name: terraria-masterworld
+    restart: always
+    networks:
+      - traefik_net
+    stdin_open: true
+    tty: true
+    ports:
+      - 7780:7777
+    volumes:
+      - type: bind
+        source: ./worlds
+        target: /root/.local/share/Terraria/Worlds/
+    environment:
+      - world=/root/.local/share/Terraria/Worlds/MasterWorld.wld
+#      - autocreate=2
+#      - worldname=MasterWorld
+#      - difficulty=2
+      - maxplayers=16
+      - port=7777
+      - password=proathlete
+      - secure=1
+      - npcstream=1
+      - motd="Welcome to North's server! :)"
+
+networks:
+  traefik_net:
+    external: true
