@@ -1,9 +1,11 @@
 pipeline {
   environment {
-    gitRepo = "https://github.com/Iceoid/terraria-server-docker.git"
+    userName = "hexlo"
     imageName = "terraria-server-docker"
-    dockerhubRegistry = "iceoid/terraria-server"
-    githubRegistry = "ghcr.io/iceoid/$imageName"
+    gitRepo = "https://github.com/${username}/${imageName}.git"
+    dockerhubRegistry = "${userName}/${imageName}"
+    githubRegistry = "ghcr.io/${userName}/${imageName}"
+    
     dockerhubCredentials = 'DOCKERHUB_TOKEN'
     githubCredentials = 'GITHUB_TOKEN'
     
@@ -50,7 +52,7 @@ pipeline {
     failure {
         mail bcc: '', body: "<b>Jenkins Build Report</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} \
         <br>Build URL: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', \
-        subject: "Jenkins Build Failed: ${env.JOB_NAME}", to: "alerts@mindlab.dev";  
+        subject: "Jenkins Build Failed: ${env.JOB_NAME}", to: "jenkins@mindlab.dev";  
 
     }
   }
