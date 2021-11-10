@@ -2,7 +2,7 @@ pipeline {
   environment {
     userName = "hexlo"
     imageName = "terraria-server-docker"
-    gitRepo = "https://github.com/${username}/${imageName}.git"
+    gitRepo = "https://github.com/${userName}/${imageName}.git"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
     
