@@ -3,13 +3,13 @@ FROM ubuntu:focal
 RUN apt update && apt install -y wget unzip gettext
 
 #Change 'VERSION','FOLDER_NUMBER' and 'DOWNLOAD_URL' variables for new versions
-ENV VERSION=1.4.2.3
+ENV VERSION=1.4.3.1
 
 ENV SERVER_NAME=terraria-server
 
-ENV FOLDER_NUMBER=1423
+ENV FOLDER_NUMBER=1431
 
-ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-server-1423.zip
+ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-server-1431.zip
 
 ENV SELF_HOSTED_DOWNLOAD_URL=https://raw.githubusercontent.com/Iceoid/FileShare/main/terraria-server-1423.tar
 
