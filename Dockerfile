@@ -1,15 +1,6 @@
 FROM ubuntu:focal
 
-RUN apt update && apt install -y wget unzip gettext
-
-#Change 'VERSION','FOLDER_NUMBER' and 'DOWNLOAD_URL' variables for new versions
-ENV VERSION=1.4.3.2
-
 ENV SERVER_NAME=terraria-server
-
-ENV FOLDER_NUMBER=1432
-
-ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-server-1432.zip
 
 ENV SELF_HOSTED_DOWNLOAD_URL=https://raw.githubusercontent.com/Iceoid/FileShare/main/terraria-server-1423.tar
 
@@ -45,12 +36,21 @@ ENV npcstream=5
 
 ENV priority=1
 
+#Change 'VERSION','FOLDER_NUMBER' and 'DOWNLOAD_URL' variables for new versions
+ENV VERSION=1.4.3.2
+
+#ENV FOLDER_NUMBER=1432
+
+ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-server-1432.zip
+
+RUN apt update && apt install -y wget unzip gettext
+
 COPY init.sh .
 
 RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
     && wget -O terraria-server.zip ${DOWNLOAD_URL} \
-    && unzip terraria-server.zip -d ${SERVER_NAME} && rm terraria-server.zip && rm -Rf ${SERVER_NAME}/${FOLDER_NUMBER}/Windows ${SERVER_NAME}/${FOLDER_NUMBER}/Mac \
-    && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux \
+    && unzip terraria-server.zip -d ${SERVER_NAME} && rm terraria-server.zip && rm -Rf ${SERVER_NAME}/*/Windows ${SERVER_NAME}/*/Mac \
+    && cd ${SERVER_NAME}/*/Linux \
     # && wget -O terraria-server.zip ${SELF_HOSTED_DOWNLOAD_URL} \
     # && tar -xf terraria-server.zip -C ${SERVER_NAME} --strip-components=1\
     # && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux \
