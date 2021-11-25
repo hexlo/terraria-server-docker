@@ -1,6 +1,10 @@
 FROM ubuntu:focal
 
-ENV SELF_HOSTED_DOWNLOAD_URL=https://raw.githubusercontent.com/Iceoid/FileShare/main/terraria-server-1423.tar
+ARG VER=latest
+
+ENV VERSION=$VER
+
+ENV LATEST_VERSION=""
 
 ENV DOCS_URL=https://terraria.fandom.com/wiki/Server
 
@@ -33,15 +37,6 @@ ENV upnp=1
 ENV npcstream=5
 
 ENV priority=1
-
-ARG VER=latest
-
-ENV VERSION=$VER
-
-ENV LATEST_VERSION=""
-
-#Change 'VERSION' and 'DOWNLOAD_URL' variables for new versions
-# ENV VERSION=1.4.3.2
 
 ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-server-1432.zip
 
