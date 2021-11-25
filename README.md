@@ -28,7 +28,7 @@ To dettach without stopping the container:
 version: '3'
 services:
   terraria-server:
-    image: iceoid/terraria-server:1.4.2.2
+    image: ghcr.io/hexlo/terraria-server-docker:latest
     container_name: terraria-server
     restart: unless-stopped
     stdin_open: true
