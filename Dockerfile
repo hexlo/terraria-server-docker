@@ -47,22 +47,22 @@ RUN apt update && apt install -y wget unzip gettext
 
 COPY init.sh .
 
-RUN mkdir -p ${SERVER_NAME} /root/.local/share/Terraria/Worlds/ \
+RUN mkdir -p /terraria-server /root/.local/share/Terraria/Worlds/ \
     && wget -O terraria-server.zip ${DOWNLOAD_URL} \
-    && unzip terraria-server.zip -d ${SERVER_NAME} && rm terraria-server.zip && rm -Rf ${SERVER_NAME}/*/Windows ${SERVER_NAME}/*/Mac \
-    && cd ${SERVER_NAME}/*/Linux \
+    && unzip terraria-server.zip -d /terraria-server && rm terraria-server.zip && rm -Rf /terraria-server/*/Windows /terraria-server/*/Mac \
+    && cd /terraria-server/*/Linux \
     # && wget -O terraria-server.zip ${SELF_HOSTED_DOWNLOAD_URL} \
-    # && tar -xf terraria-server.zip -C ${SERVER_NAME} --strip-components=1\
-    # && cd ${SERVER_NAME}/${FOLDER_NUMBER}/Linux \
+    # && tar -xf terraria-server.zip -C /terraria-server --strip-components=1\
+    # && cd /terraria-server/*/Linux \
     && chmod +x TerrariaServer.bin.x86_64* 
 
-COPY ./init.sh /${SERVER_NAME}/*/Linux
+COPY ./init.sh /terraria-server/*/Linux/
 
-RUN chmod +x /${SERVER_NAME}/*/Linux/init.sh
+RUN chmod +x /terraria-server/*/Linux/init.sh
 
 VOLUME ["/root/.local/share/Terraria/Worlds/"]
 
-WORKDIR ${SERVER_NAME}/*/Linux
+WORKDIR /terraria-server/*/Linux
 
 ENTRYPOINT [ "./init.sh" ]
 
