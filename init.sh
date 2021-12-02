@@ -28,4 +28,8 @@ echo "upnp=${upnp}" >> server-config.conf
 echo "npcstream=${npcstream}" >> server-config.conf
 echo "priority=${priority}" >> server-config.conf;
 
+echo "PWD:${PWD}"
+
+ls -al
+
 ./TerrariaServer.bin.x86_64 -config server-config.conf
