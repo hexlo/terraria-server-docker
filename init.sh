@@ -30,6 +30,6 @@ echo "priority=${priority}" >> server-config.conf;
 
 echo "PWD:${PWD}"
 
-ls -al
+ls -al ..
 
 ./TerrariaServer.bin.x86_64 -config server-config.conf

@@ -1,4 +1,5 @@
-
+terraria-server.zip
+terraria-server/
 !Dockerfile
 !docker-compose.yml
 !README.md

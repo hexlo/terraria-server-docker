@@ -72,6 +72,34 @@ services:
       - npcstream=1
       - motd="Welcome to North's server! :)"
 
+  terraria-theconstant:
+    image: ghcr.io/hexlo/terraria-server-docker:latest
+    container_name: terraria-theconstant
+    restart: always
+    networks:
+      - traefik_net
+    stdin_open: true
+    tty: true     
+    ports:
+      - 7781:7777
+    volumes: 
+      - type: bind
+        source: ./worlds
+        target: /root/.local/share/Terraria/Worlds/
+    environment:
+      # - world=/root/.local/share/Terraria/Worlds/TheConstant1.wld
+      - maxplayers=16
+      - port=7777
+      - password=const
+      - secure=1
+      - npcstream=1
+      - motd="Welcome to North's server! :)"
+
+      - autocreate=2
+      - worldname=TheConstant1
+      - difficulty=1
+      - seed=theconstant
+
 networks:
   traefik_net:
     external: true

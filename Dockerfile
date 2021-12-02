@@ -1,8 +1,8 @@
 FROM ubuntu:focal
 
-ARG VER=latest
+ARG VERSION=latest
 
-ENV VERSION=$VER
+ENV VER=$VERSION
 
 ENV LATEST_VERSION=""
 
@@ -10,7 +10,7 @@ ENV DOCS_URL=https://terraria.fandom.com/wiki/Server
 
 ENV autocreate=2
 
-ENV seed=celebrationmk10
+ENV seed=
 
 ENV worldname=TerrariaWorld
 
@@ -45,20 +45,18 @@ ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-
 RUN apt update && apt install -y wget unzip gettext curl
 
 RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
-    && if [ "$VERSION" = "latest" ]; then \
+    && if [ "$VER" = "latest" ]; then \
         echo "using latest version." \
     &&  export LATEST_VERSION=$(curl -v -L --silent \
         -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36" \
         https://terraria.fandom.com/wiki/Server#Downloads 2>&1 | grep -o 'https://terraria.org/api/download/pc-dedicated-server/[^"]*' \
         | sed 's#.*/terraria-server-##' | sed 's/.zip//' | tail -1) \
-    &&  export VERSION=${LATEST_VERSION}; fi \
-    && echo "VERSION=${VERSION}" \
-    && echo "${VERSION}" > /terraria-server/info/version.txt \
-    && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VERSION}.zip --output terraria-server.zip \
-    
-    && unzip terraria-server.zip -d /terraria-server && f=(/terraria-server/*) && mv /terraria-server/*/* /terraria-server \
-    && rmdir "${f[@]}" && rm terraria-server.zip && rm -rf /terraria-server/Mac && rm -rf /terraria-server/Windows \
-    # && unzip terraria-server.zip -d /terraria-server && rm terraria-server.zip && rm -Rf /terraria-server/*/Windows /terraria-server/*/Mac \
+    &&  export VER=${LATEST_VERSION}; fi \
+    && echo "VERSION=${VER}" \
+    && echo "${VER}" > /terraria-server/info/version.txt \
+    && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VER}.zip --output terraria-server.zip \  
+    && unzip terraria-server.zip -d /terraria-server && mv /terraria-server/*/* /terraria-server \
+    && rm terraria-server.zip && rm -rf /terraria-server/Mac && rm -rf /terraria-server/Windows \
     && cd /terraria-server/Linux \
     && chmod +x TerrariaServer.bin.x86_64*
 
