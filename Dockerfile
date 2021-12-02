@@ -40,6 +40,8 @@ ENV priority=1
 
 ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-server-1432.zip
 
+ENV DEST=/terraria-server
+
 RUN apt update && apt install -y wget unzip gettext curl
 
 RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
@@ -52,7 +54,6 @@ RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
     &&  export VERSION=${LATEST_VERSION}; fi \
     && echo "VERSION=${VERSION}" \
     && echo "${VERSION}" > /terraria-server/info/version.txt \
-    && export DEST=/terraria-server \
     && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VERSION}.zip --output terraria-server.zip \
     
     && unzip terraria-server.zip -d "${DEST}" && f="${DEST}"/* && mv "${DEST}"/*/* "${DEST}" \
