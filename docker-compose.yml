@@ -16,11 +16,7 @@ services:
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/newworld.wld
-      - maxplayers=8
-      - port=7777
       - password=passworld
-      - secure=1
-      - npcstream=1
       - motd="Welcome to North's server! :)"
 
   terraria-hamlet:
@@ -39,11 +35,7 @@ services:
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
-      - maxplayers=8
-      - port=7777
       - password=hamlet
-      - secure=1
-      - npcstream=1
       - motd="Welcome to North's server! :)"
 
   terraria-MasterWorld:
@@ -62,14 +54,10 @@ services:
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/MasterWorld.wld
-#      - autocreate=2
-#      - worldname=MasterWorld
-#      - difficulty=2
-      - maxplayers=16
-      - port=7777
+      # - autocreate=2
+      - worldname=MasterWorld
+      - difficulty=2
       - password=proathlete
-      - secure=1
-      - npcstream=1
       - motd="Welcome to North's server! :)"
 
   terraria-theconstant:
@@ -87,18 +75,14 @@ services:
         source: ./worlds
         target: /root/.local/share/Terraria/Worlds/
     environment:
-      # - world=/root/.local/share/Terraria/Worlds/TheConstant1.wld
-      - maxplayers=16
-      - port=7777
-      - password=const
-      - secure=1
-      - npcstream=1
-      - motd="Welcome to North's server! :)"
-
+      - world=/root/.local/share/Terraria/Worlds/TheConstant1.wld
       - autocreate=2
       - worldname=TheConstant1
       - difficulty=1
       - seed=theconstant
+      - password=const
+      - motd="Welcome to North's server! :)"
+      
 
 networks:
   traefik_net:

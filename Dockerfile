@@ -34,7 +34,7 @@ ENV language=en/US
 
 ENV upnp=1
 
-ENV npcstream=5
+ENV npcstream=1
 
 ENV priority=1
 
