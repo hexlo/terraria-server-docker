@@ -52,11 +52,13 @@ RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
     &&  export VERSION=${LATEST_VERSION}; fi \
     && echo "VERSION=${VERSION}" \
     && echo "${VERSION}" > /terraria-server/info/version.txt \
+    && export DEST=/terraria-server \
+    && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VERSION}.zip --output "${DEST}" \
     
-    && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VERSION}.zip --output terraria-server.zip \
-    
-    && unzip terraria-server.zip -d /terraria-server && rm terraria-server.zip && rm -Rf /terraria-server/*/Windows /terraria-server/*/Mac \
-    && cd /terraria-server/*/Linux \
+    && unzip terraria-server.zip -d "${DEST}" && f=("${DEST}"/*) && mv "${DEST}"/*/* "${DEST}" \
+    && rmdir "${f[@]}" && rm terraria-server.zip && rm "${DEST}"/Mac && rm "${DEST}"/Windows \
+    # && unzip terraria-server.zip -d /terraria-server && rm terraria-server.zip && rm -Rf /terraria-server/*/Windows /terraria-server/*/Mac \
+    && cd /terraria-server/Linux \
     && chmod +x TerrariaServer.bin.x86_64*
 
 # RUN mkdir -p /terraria-server /root/.local/share/Terraria/Worlds/ \
@@ -68,13 +70,13 @@ RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
 #     # && cd /terraria-server/*/Linux \
 #     && chmod +x TerrariaServer.bin.x86_64* 
 
-COPY ./init.sh /terraria-server/*/Linux/
+COPY ./init.sh /terraria-server/Linux/
 
-RUN chmod +x /terraria-server/*/Linux/init.sh
+RUN chmod +x /terraria-server/Linux/init.sh
 
 VOLUME ["/root/.local/share/Terraria/Worlds/"]
 
-WORKDIR /terraria-server/*/Linux
+WORKDIR /terraria-server/Linux
 
 ENTRYPOINT [ "./init.sh" ]
 
