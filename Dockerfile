@@ -42,8 +42,6 @@ ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-
 
 RUN apt update && apt install -y wget unzip gettext curl
 
-COPY init.sh .
-
 RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
     && if [ "$VERSION" = "latest" ]; then \
         echo "using latest version." \
