@@ -55,7 +55,7 @@ RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
     && export DEST=/terraria-server \
     && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VERSION}.zip --output terraria-server.zip \
     
-    && unzip terraria-server.zip -d "${DEST}" && f=("${DEST}"/*) && mv "${DEST}"/*/* "${DEST}" \
+    && unzip terraria-server.zip -d "${DEST}" && f="${DEST}"/* && mv "${DEST}"/*/* "${DEST}" \
     && rmdir "${f[@]}" && rm terraria-server.zip && rm -rf "${DEST}"/Mac && rm -rf "${DEST}"/Windows \
     # && unzip terraria-server.zip -d /terraria-server && rm terraria-server.zip && rm -Rf /terraria-server/*/Windows /terraria-server/*/Mac \
     && cd /terraria-server/Linux \
