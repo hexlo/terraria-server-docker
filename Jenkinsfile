@@ -29,10 +29,8 @@ pipeline {
         script {
           serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
           versionTag = sh(script: '''
-            echo $serverVersion | sed 's/./&./g;s/\\.$//'
+            echo $env.serverVersion | sed 's/./&./g;s/\\.$//'
           ''', , returnStdout:true)
-            
-          
           echo "serverVersion=${serverVersion}"
           echo "versionTag=${versionTag}"
         }
