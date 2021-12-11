@@ -2,6 +2,7 @@ pipeline {
   environment {
     userName = "hexlo"
     imageName = "terraria-server-docker"
+    tag = 'latest'
     gitRepo = "https://github.com/${userName}/${imageName}.git"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
@@ -12,6 +13,8 @@ pipeline {
     dockerhubImage = ''
     dockerhubImageLatest = ''
     githubImage = ''
+    
+    serverVersion = ''
   }
   agent any
   stages {
@@ -20,31 +23,66 @@ pipeline {
         git branch: 'main', credentialsId: 'GITHUB_TOKEN', url: gitRepo
       }
     }
+    stage('Getting Latest Version') {
+      steps {
+        script {
+          serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
+          echo "serverVersion=${serverVersion}"
+        }
+      }
+    }
     stage('Building image') {
       steps{
         script {
-          dockerhubImageLatest = docker.build dockerhubRegistry + ":latest"
+          // Docker Hub
+          dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}" )
+          dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}" )
+          if (serverVersion) {
+            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${serverVersion}" )
+          }
           
-          githubImage = docker.build githubRegistry + ":latest"
+          // Github
+          githubImage = docker.build( "${githubRegistry}:${tag}" )
+          githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}" )
+          if (serverVersion) {
+            githubImageVerNum = docker.build( "${githubRegistry}:${serverVersion}" )
+          }
         }
       }
     }
     stage('Deploy Image') {
       steps{
         script {
-          docker.withRegistry( '', dockerhubCredentials ) {
+          // Docker Hub
+          docker.withRegistry( '', "${dockerhubCredentials}" ) {
             dockerhubImageLatest.push()
+            dockerhubImageBuildNum.push()
+            if (dockerhubImageVerNum) {
+              dockerhubImageVerNum.push()
+            }
           }
-          docker.withRegistry('https://' + githubRegistry, githubCredentials) {
+          // Github
+          docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
             githubImage.push()
+            githubImageBuildNum.push()
+            if (dockerhubImageVerNum) {
+              githubImageVerNum.push()
+            }
           }
         }
       }
     }
     stage('Remove Unused docker image') {
       steps{
-        sh "docker rmi $dockerhubRegistry:latest"
-        sh "docker rmi $githubRegistry:latest"
+        // Docker Hub
+        sh "docker rmi ${dockerhubRegistry}:${tag}"
+        sh "docker rmi ${dockerhubRegistry}:${BUILD_NUMBER}"
+        sh "docker rmi ${dockerhubRegistry}:${serverVersion}"
+        
+        // Github
+        sh "docker rmi ${githubRegistry}:${tag}"
+        sh "docker rmi ${githubRegistry}:${BUILD_NUMBER}"
+        sh "docker rmi ${githubRegistry}:${serverVersion}"
       }
     }
   }
