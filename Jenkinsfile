@@ -28,7 +28,7 @@ pipeline {
       steps {
         script {
           serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
-//           versionTag = sh "echo ${serverVersion} | sed 's/./&./g;s/\.$//'"
+          versionTag = sh(script: "echo $serverVersion | sed 's/./&./g;s/\\.\$//'", , returnStdout:true).trim()
           echo "serverVersion=${serverVersion}"
           echo "versionTag=${versionTag}"
         }
@@ -41,14 +41,14 @@ pipeline {
           dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}" )
           dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}" )
           if (serverVersion) {
-            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${serverVersion}" )
+            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}" )
           }
           
           // Github
           githubImage = docker.build( "${githubRegistry}:${tag}" )
           githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}" )
           if (serverVersion) {
-            githubImageVerNum = docker.build( "${githubRegistry}:${serverVersion}" )
+            githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}" )
           }
         }
       }
@@ -80,12 +80,12 @@ pipeline {
         // Docker Hub
         sh "docker rmi ${dockerhubRegistry}:${tag}"
         sh "docker rmi ${dockerhubRegistry}:${BUILD_NUMBER}"
-        sh "docker rmi ${dockerhubRegistry}:${serverVersion}"
+        sh "docker rmi ${dockerhubRegistry}:${versionTag}"
         
         // Github
         sh "docker rmi ${githubRegistry}:${tag}"
         sh "docker rmi ${githubRegistry}:${BUILD_NUMBER}"
-        sh "docker rmi ${githubRegistry}:${serverVersion}"
+        sh "docker rmi ${githubRegistry}:${versionTag}"
       }
     }
   }
