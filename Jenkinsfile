@@ -15,6 +15,7 @@ pipeline {
     githubImage = ''
     
     serverVersion = ''
+    versionTag = ''
   }
   agent any
   stages {
