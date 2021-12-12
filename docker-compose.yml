@@ -1,6 +1,7 @@
 version: '3.2'
 services: 
   terraria-server:
+    # Docker Hub mirror: hexlo/terraria-server-docker:latest
     image: ghcr.io/hexlo/terraria-server-docker:latest
     container_name: terraria-server
     restart: always
@@ -22,6 +23,7 @@ services:
       com.centurylinklabs.watchtower.enable: true
 
   terraria-hamlet:
+    # Docker Hub mirror: hexlo/terraria-server-docker:latest
     image: ghcr.io/hexlo/terraria-server-docker:latest
     container_name: terraria-hamlet
     restart: always
@@ -43,6 +45,7 @@ services:
       com.centurylinklabs.watchtower.enable: true
 
   terraria-MasterWorld:
+    # Docker Hub mirror: hexlo/terraria-server-docker:latest
     image: ghcr.io/hexlo/terraria-server-docker:latest
     container_name: terraria-masterworld
     restart: always
@@ -67,6 +70,7 @@ services:
       com.centurylinklabs.watchtower.enable: true
 
   terraria-theconstant:
+    # Docker Hub mirror: hexlo/terraria-server-docker:latest
     image: ghcr.io/hexlo/terraria-server-docker:latest
     container_name: terraria-theconstant
     restart: always
