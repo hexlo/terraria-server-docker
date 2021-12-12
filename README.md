@@ -56,7 +56,7 @@ services:
 | `maxplayers` | `16` | The maximum number of players allowed |  `maxplayers=8` |
 | `port` | `7777` | Port used internally by the terraria server. _You should not change this._ | `port=8123` |
 | `password` | (*empty*)  | Set a password for the server | `password=serverpassword` |
-| `motd` | (*empty*) | Set the server motto of the day text. | `motd=Welcome to my private server! :)` |
+| `motd` | (*empty*) | Set the server motto of the day text. | `motd="Welcome to my private server! :)"` |
 | `worldpath` | `/root/.local/share/Terraria/Worlds` | Sets the folder where world files will be stored | `worldpath=/root/.local/share/Terraria/Worlds` |
 | `banlist` | `banlist.txt` | The location of the banlist. Defaults to "banlist.txt" in the working directory. | `banlist=/configs/banlist.txt` -> this would imply that you mount your banlist.txt file in the container's path `/configs/banlist.txt` |
 | `secure` | `1` | Option to prevent cheats. (1: no cheats or 0: cheats allowed) | `secure=0` |
