@@ -7,6 +7,7 @@
 ```
 
 # Terraria vanilla server
+Docker Hub mirror: hexlo/terraria-server-docker
 
 ### General Config
 - Have a `worlds` folder at the root of your directory structure (you can have it anywhere, but change the volume binds accordingly)
@@ -28,6 +29,7 @@ To dettach without stopping the container:
 version: '3'
 services:
   terraria-server:
+    # Docker Hub mirror: hexlo/terraria-server-docker:latest
     image: ghcr.io/hexlo/terraria-server-docker:latest
     container_name: terraria-server
     restart: unless-stopped
