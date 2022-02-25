@@ -68,7 +68,7 @@ pipeline {
           docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
             githubImage.push()
             githubImageBuildNum.push()
-            if (dockerhubImageVerNum) {
+            if (githubImageVerNum) {
               githubImageVerNum.push()
             }
           }
