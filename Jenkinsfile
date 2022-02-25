@@ -4,7 +4,7 @@ pipeline {
     imageName = "terraria-server-docker"
     // Set buildVersion to manually change the server version. Leave empty for defaulting to 'latest'
     buildVersion = '1434'
-    tag = buildVersion ?: 'latest'
+    tag = buildVersion ? buildVersion : 'latest'
     gitRepo = "https://github.com/${userName}/${imageName}.git"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
