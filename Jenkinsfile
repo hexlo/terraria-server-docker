@@ -29,7 +29,7 @@ pipeline {
     stage('Getting Latest Version') {
       steps {
         script {
-          
+          echo "tag=${tag}"
           if (tag == 'latest') {
             serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
           }
