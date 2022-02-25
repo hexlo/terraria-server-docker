@@ -47,17 +47,17 @@ pipeline {
       steps{
         script {
           // Docker Hub
-          dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}", "--build-arg VERSION=${serverVersion}" )
-          dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${serverVersion}" )
+          dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}", "--build-arg VERSION=${serverVersion} ." )
+          dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${serverVersion} ." )
           if (serverVersion) {
-            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}", "--build-arg VERSION=${serverVersion}" )
+            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}", "--build-arg VERSION=${serverVersion} ." )
           }
           
           // Github
-          githubImage = docker.build( "${githubRegistry}:${tag}", "--build-arg VERSION=${serverVersion}" )
-          githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${serverVersion}" )
+          githubImage = docker.build( "${githubRegistry}:${tag}", "--build-arg VERSION=${serverVersion} ." )
+          githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${serverVersion} ." )
           if (serverVersion) {
-            githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}", "--build-arg VERSION=${serverVersion}" )
+            githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}", "--build-arg VERSION=${serverVersion} ." )
           }
         }
       }
