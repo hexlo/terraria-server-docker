@@ -2,6 +2,7 @@ pipeline {
   environment {
     userName = "hexlo"
     imageName = "terraria-server-docker"
+    // Set buildVersion to manually change the server version. Leave empty for defaulting to 'latest'
     buildVersion = '1434'
     tag = buildVersion ?: 'latest'
     gitRepo = "https://github.com/${userName}/${imageName}.git"
