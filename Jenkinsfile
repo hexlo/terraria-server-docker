@@ -2,7 +2,8 @@ pipeline {
   environment {
     userName = "hexlo"
     imageName = "terraria-server-docker"
-    tag = 'latest'
+    buildVersion = '1434'
+    tag = buildVersion ?: 'latest'
     gitRepo = "https://github.com/${userName}/${imageName}.git"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
@@ -27,10 +28,18 @@ pipeline {
     stage('Getting Latest Version') {
       steps {
         script {
-          serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
+          
+          if (tag == 'latest') {
+            serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
+          }
+          else {
+            serverVersion = buildVersion
+          }
+          
           versionTag = sh(script: "echo $serverVersion | sed 's/./&./g;s/\\.\$//'", , returnStdout:true).trim()
           echo "serverVersion=${serverVersion}"
           echo "versionTag=${versionTag}"
+          
         }
       }
     }
@@ -38,17 +47,17 @@ pipeline {
       steps{
         script {
           // Docker Hub
-          dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}" )
-          dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}" )
+          dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}", "--build-arg VERSION=${serverVersion}" )
+          dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${serverVersion}" )
           if (serverVersion) {
-            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}" )
+            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}", "--build-arg VERSION=${serverVersion}" )
           }
           
           // Github
-          githubImage = docker.build( "${githubRegistry}:${tag}" )
-          githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}" )
+          githubImage = docker.build( "${githubRegistry}:${tag}", "--build-arg VERSION=${serverVersion}" )
+          githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${serverVersion}" )
           if (serverVersion) {
-            githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}" )
+            githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}", "--build-arg VERSION=${serverVersion}" )
           }
         }
       }
