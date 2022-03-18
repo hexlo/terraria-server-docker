@@ -40,6 +40,7 @@ pipeline {
           versionTag = sh(script: "echo $serverVersion | sed 's/./&./g;s/\\.\$//'", , returnStdout:true).trim()
           echo "serverVersion=${serverVersion}"
           echo "versionTag=${versionTag}"
+          echo "buildVersion=${buildVersion}"
           
         }
       }
@@ -48,7 +49,6 @@ pipeline {
       steps{
         script {
           // Docker Hub
-          echo "buildVersion=${buildVersion}"
           def dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}", "--build-arg VERSION=${buildVersion} ." )
           def dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${buildVersion} ." )
           if (serverVersion) {
