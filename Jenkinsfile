@@ -3,7 +3,7 @@ pipeline {
     userName = "hexlo"
     imageName = "terraria-server-docker"
     // Set buildVersion to manually change the server version. Leave empty for defaulting to 'latest'
-    buildVersion = '1434'
+    buildVersion = ''
     tag = buildVersion ? buildVersion : 'latest'
     gitRepo = "https://github.com/${userName}/${imageName}.git"
     dockerhubRegistry = "${userName}/${imageName}"
@@ -48,17 +48,18 @@ pipeline {
       steps{
         script {
           // Docker Hub
-          dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}", "--build-arg VERSION=${serverVersion} ." )
-          dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${serverVersion} ." )
+          echo "buildVersion=${buildVersion}"
+          def dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}", "--build-arg VERSION=${buildVersion} ." )
+          def dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${buildVersion} ." )
           if (serverVersion) {
-            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}", "--build-arg VERSION=${serverVersion} ." )
+            def dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}", "--build-arg VERSION=${buildVersion} ." )
           }
           
           // Github
-          githubImage = docker.build( "${githubRegistry}:${tag}", "--build-arg VERSION=${serverVersion} ." )
-          githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${serverVersion} ." )
+          githubImage = docker.build( "${githubRegistry}:${tag}", "--build-arg VERSION=${buildVersion} ." )
+          githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}", "--build-arg VERSION=${buildVersion} ." )
           if (serverVersion) {
-            githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}", "--build-arg VERSION=${serverVersion} ." )
+            githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}", "--build-arg VERSION=${buildVersion} ." )
           }
         }
       }
