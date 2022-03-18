@@ -49,18 +49,10 @@ pipeline {
       steps{
         script {
           // Docker Hub
-          def dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
-          def dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
-          if (serverVersion) {
-            def dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
-          }
+          def dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
           
           // Github
           def githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
-          def githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
-          if (serverVersion) {
-            def githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
-          }
         }
       }
     }
@@ -69,19 +61,15 @@ pipeline {
         script {
           // Docker Hub
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
-            dockerhubImageLatest.push()
-            dockerhubImageBuildNum.push()
-            if (dockerhubImageVerNum) {
-              dockerhubImageVerNum.push()
-            }
+            dockerhubImage.push("${tag}")
+            dockerhubImage.push("${BUILD_NUMBER}")
+            dockerhubImage.push("${versionTag}")
           }
           // Github
           docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
-            githubImage.push()
-            githubImageBuildNum.push()
-            if (githubImageVerNum) {
-              githubImageVerNum.push()
-            }
+            githubImage.push("${tag}")
+            githubImage.push("${BUILD_NUMBER}")
+            githubImage.push("${versionTag}")
           }
         }
       }
