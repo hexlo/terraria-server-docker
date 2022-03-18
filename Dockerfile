@@ -38,11 +38,9 @@ ENV npcstream=1
 
 ENV priority=1
 
-ENV DOWNLOAD_URL=https://terraria.org/api/download/pc-dedicated-server/terraria-server-1432.zip
-
-# ENV DEST=/terraria-server
-
 RUN apt update && apt install -y wget unzip gettext curl
+
+ARG CACHE_DATE=''
 
 RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
     && if [ "$VER" = "latest" ]; then \
