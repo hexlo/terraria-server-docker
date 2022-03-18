@@ -48,11 +48,13 @@ pipeline {
     stage('Building image') {
       steps{
         script {
+          def date = sh(echo $(date +%Y-%m-%d:%H:%M:%S))
+          echo "date=$date"
           // Docker Hub
-          def dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
+          def dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
           
           // Github
-          def githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$(date +%Y-%m-%d:%H:%M:%S) ." )
+          def githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
         }
       }
     }
