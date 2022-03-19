@@ -14,7 +14,7 @@ Docker Hub mirror: hexlo/terraria-server-docker
 - Put your worlds in the worlds folder
 - When you create a container, map the port to 7777 internally, ie.: 1234:7777 (then forward port to 1234 in this case)
 - Add a volume for the worlds mounted inside the container:
-`./worlds:/root/.local/share/Terraria/Worlds/`\
+`./worlds:/root/.local/share/Terraria/Worlds/`
 - You can create a new world or select different world (located in the world folder above) by starting a container and attaching to it
 `docker attach <container-name>`
 - press enter
