@@ -6,15 +6,17 @@
   \/_/\/_/   \/_____/   \/_/\/_/   \/_____/   \/_____/ 
 ```
 
+
 # Terraria vanilla server
-Docker Hub mirror: hexlo/terraria-server-docker
+Docker Hub mirror: [hexlo/terraria-server-docker](https://hub.docker.com/r/hexlo/terraria-server-docker)
+
 
 ### General Config
 - Have a `worlds` folder at the root of your directory structure (you can have it anywhere, but change the volume binds accordingly)
 - Put your worlds in the worlds folder
 - When you create a container, map the port to 7777 internally, ie.: 1234:7777 (then forward port to 1234 in this case)
 - Add a volume for the worlds mounted inside the container:
-`./worlds:/root/.local/share/Terraria/Worlds/`\
+`./worlds:/root/.local/share/Terraria/Worlds/`
 - You can create a new world or select different world (located in the world folder above) by starting a container and attaching to it
 `docker attach <container-name>`
 - press enter
@@ -23,7 +25,11 @@ Docker Hub mirror: hexlo/terraria-server-docker
 To dettach without stopping the container:
 `ctrl+p ctrl+q`
 
-### *Important: if you want the server to start automatically, you need to provide a world path by defining the environment variable `world` as shown bellow.*
+
+##### Important!
+if you want the server to start automatically, you need to provide a world path by defining the environment variable `world` as shown bellow.
+
+
 ### docker-compose.yml exemple:
 ```
 version: '3'
@@ -51,6 +57,7 @@ services:
 
 
 ### environment variables (case-sensitive!):
+
 | Env variable | Default value | Description | Example |
 | :------------- | :----------: | :----------- | :----------- |
 | `world` | (*empty*) | Path to your world. _You need to provide a world for the server to start automatically_ | `world=/root/.local/share/Terraria/Worlds/My_World.wld` |
@@ -71,18 +78,19 @@ services:
 | `priority` | (*empty*) | Sets the process priority | `priority=1` |
 
 
+##### Important!
+
+- If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually. If you create a new world, it will be saved in the path defined by the environment variable `worldpath`.
+
+ 1. `docker attach <container name>`
+ 2. press _*enter*_
+ 3. Go through the options
+ 4. Detach from the container by pressing `ctrl+p` + `ctrl+q`
+
+- If, after creating your world with a specific seed, the server still doesn't initializes automatically, be sure to comment or remove the `seed=<yourseed>` variable in the docker-compose.yml file.
 
 
-### Important!
-If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually. If you create a new world, it will be saved in the path defined by the environment variable `worldpath`.
-
-1. `docker attach <container name>`
-2. press _*enter*_
-3. Go through the options
-4. Detach from the container by pressing `ctrl+p` + `ctrl+q`
-
-
-### List of server-side console commands from the [official documentation](https://terraria.fandom.com/wiki/Server#Server_files)
+### List of server-side console commands from the [unofficial wiki](https://terraria.fandom.com/wiki/Server#Server_files)
 
 Once a dedicated server is running, the following commands can be run.\
 First, attach to the container with `docker attach <container name>`.
@@ -116,7 +124,3 @@ The command ban <player> will ban the indicated player from the server. A banned
 
 ```
 Note: no forward-slash `/` is needed before the command, as some command interfaces require.
-
-
-
-
