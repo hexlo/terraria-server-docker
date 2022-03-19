@@ -48,7 +48,7 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-          date = sh "echo $(date +%Y-%m-%d:%H:%M:%S)"
+          date = sh "echo \$(date +%Y-%m-%d:%H:%M:%S)"
           echo "date=$date"
           // Docker Hub
           dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
