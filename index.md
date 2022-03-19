@@ -51,6 +51,7 @@ services:
 
 
 ### environment variables (case-sensitive!):
+
 | Env variable | Default value | Description | Example |
 | :------------- | :----------: | :----------- | :----------- |
 | `world` | (*empty*) | Path to your world. _You need to provide a world for the server to start automatically_ | `world=/root/.local/share/Terraria/Worlds/My_World.wld` |
