@@ -48,13 +48,13 @@ pipeline {
     stage('Building image') {
       steps{
         script {
-          def date = sh(echo $(date +%Y-%m-%d:%H:%M:%S))
+          date = sh(echo $(date +%Y-%m-%d:%H:%M:%S))
           echo "date=$date"
           // Docker Hub
-          def dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
+          dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
           
           // Github
-          def githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
+          githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
         }
       }
     }
@@ -64,14 +64,14 @@ pipeline {
           // Docker Hub
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
             dockerhubImage.push("${tag}")
-            dockerhubImage.push("${BUILD_NUMBER}")
             dockerhubImage.push("${versionTag}")
+            // dockerhubImage.push("${BUILD_NUMBER}")
           }
           // Github
           docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
             githubImage.push("${tag}")
-            githubImage.push("${BUILD_NUMBER}")
             githubImage.push("${versionTag}")
+            // githubImage.push("${BUILD_NUMBER}")
           }
         }
       }
@@ -80,13 +80,13 @@ pipeline {
       steps{
         // Docker Hub
         sh "docker rmi ${dockerhubRegistry}:${tag}"
-        sh "docker rmi ${dockerhubRegistry}:${BUILD_NUMBER}"
         sh "docker rmi ${dockerhubRegistry}:${versionTag}"
+        // sh "docker rmi ${dockerhubRegistry}:${BUILD_NUMBER}"
         
         // Github
         sh "docker rmi ${githubRegistry}:${tag}"
-        sh "docker rmi ${githubRegistry}:${BUILD_NUMBER}"
         sh "docker rmi ${githubRegistry}:${versionTag}"
+        // sh "docker rmi ${githubRegistry}:${BUILD_NUMBER}"
       }
     }
   }
