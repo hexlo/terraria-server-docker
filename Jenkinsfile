@@ -2,7 +2,9 @@ pipeline {
   environment {
     userName = "hexlo"
     imageName = "terraria-server-docker"
-    tag = 'latest'
+    // Set buildVersion to manually change the server version. Leave empty for defaulting to 'latest'
+    buildVersion = ''
+    tag = buildVersion ? buildVersion : 'latest'
     gitRepo = "https://github.com/${userName}/${imageName}.git"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
@@ -27,29 +29,32 @@ pipeline {
     stage('Getting Latest Version') {
       steps {
         script {
-          serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
+          echo "tag=${tag}"
+          if (tag == 'latest') {
+            serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
+          }
+          else {
+            serverVersion = buildVersion
+          }
+          
           versionTag = sh(script: "echo $serverVersion | sed 's/./&./g;s/\\.\$//'", , returnStdout:true).trim()
           echo "serverVersion=${serverVersion}"
           echo "versionTag=${versionTag}"
+          echo "buildVersion=${buildVersion}"
+          
         }
       }
     }
     stage('Building image') {
       steps{
         script {
+          date = sh(echo $(date +%Y-%m-%d:%H:%M:%S))
+          echo "date=$date"
           // Docker Hub
-          dockerhubImageLatest = docker.build( "${dockerhubRegistry}:${tag}" )
-          dockerhubImageBuildNum = docker.build( "${dockerhubRegistry}:${BUILD_NUMBER}" )
-          if (serverVersion) {
-            dockerhubImageVerNum = docker.build( "${dockerhubRegistry}:${versionTag}" )
-          }
+          dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
           
           // Github
-          githubImage = docker.build( "${githubRegistry}:${tag}" )
-          githubImageBuildNum = docker.build( "${githubRegistry}:${BUILD_NUMBER}" )
-          if (serverVersion) {
-            githubImageVerNum = docker.build( "${githubRegistry}:${versionTag}" )
-          }
+          githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
         }
       }
     }
@@ -58,19 +63,15 @@ pipeline {
         script {
           // Docker Hub
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
-            dockerhubImageLatest.push()
-            dockerhubImageBuildNum.push()
-            if (dockerhubImageVerNum) {
-              dockerhubImageVerNum.push()
-            }
+            dockerhubImage.push("${tag}")
+            dockerhubImage.push("${versionTag}")
+            // dockerhubImage.push("${BUILD_NUMBER}")
           }
           // Github
           docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
-            githubImage.push()
-            githubImageBuildNum.push()
-            if (dockerhubImageVerNum) {
-              githubImageVerNum.push()
-            }
+            githubImage.push("${tag}")
+            githubImage.push("${versionTag}")
+            // githubImage.push("${BUILD_NUMBER}")
           }
         }
       }
@@ -79,13 +80,13 @@ pipeline {
       steps{
         // Docker Hub
         sh "docker rmi ${dockerhubRegistry}:${tag}"
-        sh "docker rmi ${dockerhubRegistry}:${BUILD_NUMBER}"
         sh "docker rmi ${dockerhubRegistry}:${versionTag}"
+        // sh "docker rmi ${dockerhubRegistry}:${BUILD_NUMBER}"
         
         // Github
         sh "docker rmi ${githubRegistry}:${tag}"
-        sh "docker rmi ${githubRegistry}:${BUILD_NUMBER}"
         sh "docker rmi ${githubRegistry}:${versionTag}"
+        // sh "docker rmi ${githubRegistry}:${BUILD_NUMBER}"
       }
     }
   }

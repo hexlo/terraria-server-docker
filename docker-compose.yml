@@ -1,7 +1,8 @@
 version: '3.2'
 services: 
   terraria-server:
-    image: ghcr.io/hexlo/terraria-server-docker:latest
+    # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
+    image: hexlo/terraria-server-docker:latest
     container_name: terraria-server
     restart: always
     networks:
@@ -18,9 +19,12 @@ services:
       - world=/root/.local/share/Terraria/Worlds/newworld.wld
       - password=passworld
       - motd="Welcome to North's server! :)"
+    labels:
+      com.centurylinklabs.watchtower.enable: true
 
   terraria-hamlet:
-    image: ghcr.io/hexlo/terraria-server-docker:latest
+    # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
+    image: hexlo/terraria-server-docker:latest
     container_name: terraria-hamlet
     restart: always
     networks:
@@ -37,9 +41,12 @@ services:
       - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
       - password=hamlet
       - motd="Welcome to North's server! :)"
+    labels:
+      com.centurylinklabs.watchtower.enable: true
 
   terraria-MasterWorld:
-    image: ghcr.io/hexlo/terraria-server-docker:latest
+    # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
+    image: hexlo/terraria-server-docker:latest
     container_name: terraria-masterworld
     restart: always
     networks:
@@ -54,14 +61,17 @@ services:
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/MasterWorld.wld
-      # - autocreate=2
+      - autocreate=2
       - worldname=MasterWorld
       - difficulty=2
       - password=proathlete
       - motd="Welcome to North's server! :)"
+    labels:
+      com.centurylinklabs.watchtower.enable: true
 
   terraria-theconstant:
-    image: ghcr.io/hexlo/terraria-server-docker:latest
+    # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
+    image: hexlo/terraria-server-docker:latest
     container_name: terraria-theconstant
     restart: always
     networks:
@@ -82,8 +92,9 @@ services:
       - seed=theconstant
       - password=const
       - motd="Welcome to North's server! :)"
+    labels:
+      com.centurylinklabs.watchtower.enable: true
       
-
 networks:
   traefik_net:
     external: true
