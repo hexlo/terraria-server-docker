@@ -1,8 +1,7 @@
-<a href="https://www.buymeacoffee.com/hexlo" target="_blank">
- <img src="./assets/yellow-button-256w.png" alt="Buy me a coffee!" width="256" height="76">
+<a href="https://www.buymeacoffee.com/hexlo" target="_blank">  
+ <img src="./assets/yellow-button-256w.png" alt="Buy me a coffee!" width="256" height="76">  
 </a>  
-<!-- [![Buy me a coffee](./assets/yellow-button-256w.png)](https://www.buymeacoffee.com/hexlo)   -->
-[GitHub Page](https://terraria.hexlo.io)
+
 ```
  __  __     ______     __  __     __         ______    
 /\ \_\ \   /\  ___\   /\_\_\_\   /\ \       /\  __ \   
@@ -10,6 +9,7 @@
  \ \_\ \_\  \ \_____\   /\_\/\_\  \ \_____\  \ \_____\ 
   \/_/\/_/   \/_____/   \/_/\/_/   \/_____/   \/_____/ 
 ```
+[GitHub Page](https://terraria.hexlo.io)
 
 ### There is a new image available!
 A Terraria Modded Server using The Calamity Mod. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
