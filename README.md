@@ -8,7 +8,7 @@
 ```
 
 ### There is a new image available!
-A Terraria Modded Server using The Calamity Mod. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
+A Terraria Modded Server with The Calamity Mod and others. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
 
 # Terraria vanilla server
 Docker Hub mirror: [hexlo/terraria-server-docker](https://hub.docker.com/r/hexlo/terraria-server-docker)
@@ -58,8 +58,8 @@ services:
       - password=mypassword
 ```
 # Terraria Server - Calamity Mod using tModLoader
-Image tag (Docker Hub): _**hexlo/terraria-server-docker:calamity-latest**_ \
-Image mirror (Github): _**ghcr.io/hexlo/terraria-server-docker:calamity-latest**_
+Image tag (Docker Hub): _**hexlo/terraria-server-docker:tmodloader-latest**_ \
+Image mirror (Github): _**ghcr.io/hexlo/terraria-server-docker:tmodloader-latest**_
 
 ### This Version also Includes these Mods:
 - [BossChecklist](https://github.com/JavidPack/BossChecklist/releases/latest)
@@ -73,8 +73,9 @@ To use these, you also need to install them via tModLoader's Mods Browser
 **On the Client** (your computer):  
 You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. Launch tModLoader and download these 2 mods: 
 - CalamityMod
-- CalamityModMusic  
+- CalamityModMusic
 <!-- end of the list -->
+Other Mods are optional.
 
 Make sure you enable them and or reload them via the *Mods* menu.  
 
