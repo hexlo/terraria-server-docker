@@ -1,6 +1,5 @@
-[![Buy me a coffee](https://downloads.intercomcdn.com/i/o/234105/0d29fbdf17e257cdfc2ba1ba/7103925065c5e9bd6ac7ac9efd453fd7.png)](https://www.buymeacoffee.com/hexlo)
+[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-2.svg)](https://www.buymeacoffee.com/hexlo)
 [GitHub Page](https://terraria.hexlo.io)
-<script type="text/javascript" src="https://cdnjs.buymeacoffee.com/1.0.0/button.prod.min.js" data-name="bmc-button" data-slug="hexlo" data-color="#BD5FFF" data-emoji=""  data-font="Bree" data-text="Buy me a coffee" data-outline-color="#000000" data-font-color="#ffffff" data-coffee-color="#FFDD00" ></script>
 ```
  __  __     ______     __  __     __         ______    
 /\ \_\ \   /\  ___\   /\_\_\_\   /\ \       /\  __ \   
