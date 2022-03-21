@@ -7,6 +7,7 @@
   \/_/\/_/   \/_____/   \/_/\/_/   \/_____/   \/_____/ 
 ```
 
+### There is a new image available: A Terraria Modded Server using The Calamity Mod. [See below](# Terraria Server - Calamity Mod using tModLoader)
 
 # Terraria vanilla server
 Docker Hub mirror: [hexlo/terraria-server-docker](https://hub.docker.com/r/hexlo/terraria-server-docker)
@@ -28,10 +29,10 @@ To dettach without stopping the container:
 
 
 ##### Important!
-if you want the server to start automatically, you need to provide a world path by defining the environment variable `world` as shown bellow.
+If you want the server to start automatically, you need to provide a world path by defining the environment variable `world` as shown bellow.
 
 
-### docker-compose.yml exemple:
+### docker-compose.yml exemple for Vanilla Server:
 ```
 version: '3'
 services:
@@ -55,7 +56,41 @@ services:
       - port=7777
       - password=mypassword
 ```
+# Terraria Server - Calamity Mod using tModLoader
+Image url:      hexlo/terraria-server-docker:calamity-latest
+Image mirror:   ghcr.io/hexlo/terraria-server-docker:calamity-latest
 
+### Important!
+You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. If the server gets out of date, make sure you recreate the container to update it.
+Worlds and players created with 1.4 or newer will not work with the mod. (as of today).
+
+### docker-compose.yml exemple for Calamity Modded Server:
+```
+version: '3.2'
+services:
+  terraria-calamity-server:
+    # Github mirror: ghcr.io/hexlo/terraria-server-docker:calamity-latest
+    image: hexlo/terraria-server-docker:calamity-latest
+    container_name: terraria-server-Calamity0
+    restart: always
+    networks:
+      - traefik_net
+    stdin_open: true
+    tty: true
+    ports:
+      - 7782:7777
+    volumes:
+      - type: bind
+        source: ./Worlds
+        target: /root/.local/share/Terraria/ModLoader/Worlds/
+    environment:
+      - world=/root/.local/share/Terraria/ModLoader/Worlds/Calamity0.wld
+      - autocreate=2
+      - worldname=Calamity0
+      - difficulty=1
+      - password=calam
+      - motd="Welcome to Hexlo's server! :)"
+```
 
 ### environment variables (case-sensitive!):
 
