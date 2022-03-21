@@ -7,7 +7,8 @@
   \/_/\/_/   \/_____/   \/_/\/_/   \/_____/   \/_____/ 
 ```
 
-### There is a new image available: A Terraria Modded Server using The Calamity Mod. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
+### There is a new image available!
+A Terraria Modded Server using The Calamity Mod. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
 
 # Terraria vanilla server
 Docker Hub mirror: [hexlo/terraria-server-docker](https://hub.docker.com/r/hexlo/terraria-server-docker)
@@ -28,7 +29,7 @@ To dettach without stopping the container:
 `ctrl+p ctrl+q`
 
 
-##### Important!
+### Important!
 If you want the server to start automatically, you need to provide a world path by defining the environment variable `world` as shown bellow.
 
 
@@ -57,8 +58,8 @@ services:
       - password=mypassword
 ```
 # Terraria Server - Calamity Mod using tModLoader
-Image url:      hexlo/terraria-server-docker:calamity-latest
-Image mirror:   ghcr.io/hexlo/terraria-server-docker:calamity-latest
+Image url: *hexlo/terraria-server-docker:calamity-latest* \
+Image mirror: *ghcr.io/hexlo/terraria-server-docker:calamity-latest*
 
 ### Important!
 You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. If the server gets out of date, make sure you recreate the container to update it.
@@ -91,6 +92,7 @@ services:
       - password=calam
       - motd="Welcome to Hexlo's server! :)"
 ```
+### Other Info
 
 ### environment variables (case-sensitive!):
 
