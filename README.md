@@ -1,4 +1,4 @@
-[![Buy me a coffee](https://github.com/hexlo/terraria-server-docker/raw/gh-pages/assets/yellow-button-256w.png)](https://www.buymeacoffee.com/hexlo)  
+[![Buy me a coffee](https://github.com/hexlo/terraria-server-docker/raw/gh-pages/assets/yellow-button-256w.png)](https://www.buymeacoffee.com/hexlo)
 
 ```
  __  __     ______     __  __     __         ______    
@@ -9,14 +9,15 @@
 ```
 [GitHub Page](https://terraria.hexlo.io)
 
-### There is a new image available!
-A Terraria Modded Server with The Calamity Mod and others. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
+### ***There is a new image available!***
+A Terraria Modded Server with [tModLoader](https://github.com/tModLoader/tModLoader/wiki).   
+[See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
 
-# Terraria vanilla server
+# **Terraria vanilla server**
 Docker Hub mirror: [hexlo/terraria-server-docker](https://hub.docker.com/r/hexlo/terraria-server-docker)
 
 
-### General Config
+## **General Config**
 - Have a `worlds` folder at the root of your directory structure (you can have it anywhere, but change the volume binds accordingly)
 - Put your worlds in the worlds folder
 - When you create a container, map the port to 7777 internally, ie.: 1234:7777 (then forward port to 1234 in this case)
@@ -31,11 +32,11 @@ To dettach without stopping the container:
 `ctrl+p ctrl+q`
 
 
-### Important!
+### **Important!**
 If you want the server to start automatically, you need to provide a world path by defining the environment variable `world` as shown bellow.
 
 
-### docker-compose.yml exemple for Vanilla Server:
+### ***docker-compose.yml exemple for Vanilla Server:***
 ```
 version: '3'
 services:
@@ -67,25 +68,26 @@ Image mirror (Github): _**ghcr.io/hexlo/terraria-server-docker:tmodloader-latest
 - [BossChecklist](https://github.com/JavidPack/BossChecklist/releases/latest)
 - [RecipeBrowser](https://github.com/JavidPack/RecipeBrowser/releases/latest)
 - [MagicStorageExtra](https://github.com/ExterminatorX99/MagicStorageExtra/releases/latest)
+- [ThoriumMod](https://github.com/SamsonAllen13/ThoriumMod/releases/latest) (disabled by default)
 <!-- end of the list -->
-To use these, you also need to install them via tModLoader's Mods Browser
+To use these, you also need to install them via tModLoader's Mods Browser on your client.  
+To enable or disable mods on the server, modify the `enabled.json` file with the names of the mods. This needs to be done before starting the container.  
+Some mods may clash with each others, especially big content mods. Refer to the mods wiki for more info.
 
-### Important!
+### **Important!**  
 
-**On the Client** (your computer):  
-You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. Launch tModLoader and download these 2 mods: 
-- CalamityMod
-- CalamityModMusic
-<!-- end of the list -->
-Other Mods are optional.
+*On the Client (your computer):*  
 
-Make sure you enable them and or reload them via the *Mods* menu.  
+You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. Launch tModLoader and download the same mods that are active on the server.  
 
-**On the server**:  
+Make sure you enable them and or reload them via the *Mods* menu on your tModLoader client.  
+  
+
+*On the server:*  
 If the server gets out of date, make sure you recreate the container to update it.  
-Worlds and players created with 1.4 or newer will not work with the mod. (as of today).
-
-### docker-compose.yml exemple for Calamity Modded Server:
+Worlds and players created with 1.4 or newer will not work with tModLoader. (as of today).  
+Refer to the `enabled.json` file to know which mods are active or not.  
+### ***docker-compose.yml exemple for Calamity Modded Server:***
 ```
 version: '3.2'
 services:
@@ -110,9 +112,9 @@ services:
       - password=calam
       - motd="Welcome to Hexlo's server! :)"
 ```
-### Other Info
+## **Other Info**
 
-### environment variables (case-sensitive!):
+### ***environment variables (case-sensitive!):***
 
 | Env variable | Default value | Description | Example |
 | :------------- | :----------: | :----------- | :----------- |
