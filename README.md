@@ -58,15 +58,15 @@ services:
       - password=mypassword
 ```
 # Terraria Server - Calamity Mod using tModLoader
-Image url: *hexlo/terraria-server-docker:calamity-latest* \
-Image mirror: *ghcr.io/hexlo/terraria-server-docker:calamity-latest*
+Image url: _**hexlo/terraria-server-docker:calamity-latest**_ \
+Image mirror: _**ghcr.io/hexlo/terraria-server-docker:calamity-latest**_
 
 ### Important!
 You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. Launch tModLoader and download these 2 mods: 
 - CalamityMod
 - CalamityModMusic 
 <a/>
-Make sure you enable them and/or reload them via the _Mods_ menu. \
+Make sure you enable them and/or reload them via the *Mods* menu. \
 If the server gets out of date, make sure you recreate the container to update it.
 Worlds and players created with 1.4 or newer will not work with the mod. (as of today).
 
