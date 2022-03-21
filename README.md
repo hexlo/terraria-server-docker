@@ -1,5 +1,5 @@
-[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-2.svg =100x20)](https://www.buymeacoffee.com/hexlo)
-[GitHub Page](https://terraria.hexlo.io)
+[![Buy me a coffee](https://github.com/hexlo/terraria-server-docker/raw/gh-pages/assets/yellow-button-256w.png)](https://www.buymeacoffee.com/hexlo)  
+
 ```
  __  __     ______     __  __     __         ______    
 /\ \_\ \   /\  ___\   /\_\_\_\   /\ \       /\  __ \   
@@ -7,6 +7,7 @@
  \ \_\ \_\  \ \_____\   /\_\/\_\  \ \_____\  \ \_____\ 
   \/_/\/_/   \/_____/   \/_/\/_/   \/_____/   \/_____/ 
 ```
+[GitHub Page](https://terraria.hexlo.io)
 
 ### There is a new image available!
 A Terraria Modded Server with The Calamity Mod and others. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
