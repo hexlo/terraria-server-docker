@@ -1,4 +1,4 @@
-[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-2.svg)](https://www.buymeacoffee.com/hexlo)
+[![Buy me a coffee](https://www.buymeacoffee.com/assets/img/guidelines/download-assets-2.svg =100x20)](https://www.buymeacoffee.com/hexlo)
 [GitHub Page](https://terraria.hexlo.io)
 ```
  __  __     ______     __  __     __         ______    
