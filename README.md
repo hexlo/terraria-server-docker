@@ -7,7 +7,7 @@
   \/_/\/_/   \/_____/   \/_/\/_/   \/_____/   \/_____/ 
 ```
 
-### There is a new image available: A Terraria Modded Server using The Calamity Mod. [See below](# Terraria Server - Calamity Mod using tModLoader)
+### There is a new image available: A Terraria Modded Server using The Calamity Mod. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
 
 # Terraria vanilla server
 Docker Hub mirror: [hexlo/terraria-server-docker](https://hub.docker.com/r/hexlo/terraria-server-docker)
