@@ -60,7 +60,7 @@ services:
       - port=7777
       - password=mypassword
 ```
-# Terraria Server - Calamity Mod using tModLoader
+# **Terraria Server - Calamity Mod using tModLoader**
 Image tag (Docker Hub): _**hexlo/terraria-server-docker:tmodloader-latest**_ \
 Image mirror (Github): _**ghcr.io/hexlo/terraria-server-docker:tmodloader-latest**_
 
@@ -74,26 +74,26 @@ To use these, you also need to install them via tModLoader's Mods Browser on you
 To enable or disable mods on the server, modify the `enabled.json` file with the names of the mods. This needs to be done before starting the container.  
 Some mods may clash with each others, especially big content mods. Refer to the mods wiki for more info.
 
-### **Important!**  
+## **Important!**  
 
-*On the Client (your computer):*  
+### <ins> On the Client (your computer): <ins/>
 
 You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. Launch tModLoader and download the same mods that are active on the server.  
 
-Make sure you enable them and or reload them via the *Mods* menu on your tModLoader client.  
+Make sure you enable them and or reload them via the *Mod's* menu on your tModLoader client.  
   
 
-*On the server:*  
+### <ins> On the server: <ins/>   
 If the server gets out of date, make sure you recreate the container to update it.  
 Worlds and players created with 1.4 or newer will not work with tModLoader. (as of today).  
-Refer to the `enabled.json` file to know which mods are active or not.  
-### ***docker-compose.yml exemple for Calamity Modded Server:***
+Refer to the `enabled.json` file to know which mods are active or not, and match them on your client. 
+### ***docker-compose.yml exemple for tModLoader Server:***
 ```
 version: '3.2'
 services:
-  terraria-calamity-server:
-    # Github mirror: ghcr.io/hexlo/terraria-server-docker:calamity-latest
-    image: hexlo/terraria-server-docker:calamity-latest
+  terraria-tmodloader-server:
+    # Github mirror: ghcr.io/hexlo/terraria-server-docker:tmodloader-latest
+    image: hexlo/terraria-server-docker:tmodloader-latest
     container_name: terraria-server-Calamity0
     restart: always
     stdin_open: true
@@ -112,7 +112,7 @@ services:
       - password=calam
       - motd="Welcome to Hexlo's server! :)"
 ```
-## **Other Info**
+## <ins> **Other Info** <ins/>
 
 ### ***environment variables (case-sensitive!):***
 
@@ -135,8 +135,9 @@ services:
 | `npcstream` | `1` | Reduces enemy skipping but increases bandwidth usage. The lower the number the less skipping will happen, but more data is sent. 0 is off. | `npcstream=60` |
 | `priority` | (*empty*) | Sets the process priority | `priority=1` |
 
+<br>
 
-##### Important!
+## **Important!**
 
 - If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually. If you create a new world, it will be saved in the path defined by the environment variable `worldpath`.
 
@@ -145,10 +146,11 @@ services:
  3. Go through the options
  4. Detach from the container by pressing `ctrl+p` + `ctrl+q`
 
-- If, after creating your world with a specific seed, the server still doesn't initializes automatically, be sure to comment or remove the `seed=<yourseed>` variable in the docker-compose.yml file.
+- If, after creating your world with a specific seed, the server still doesn't initializes automatically, be sure to comment or remove the `seed=<yourseed>` variable in the docker-compose.yml file.  
 
+<br>
 
-### List of server-side console commands from the [unofficial wiki](https://terraria.fandom.com/wiki/Server#Server_files)
+### **List of server-side console commands from the [unofficial wiki](https://terraria.fandom.com/wiki/Server#Server_files)**
 
 Once a dedicated server is running, the following commands can be run.\
 First, attach to the container with `docker attach <container name>`.
@@ -181,4 +183,4 @@ Banning and un-banning
 The command ban <player> will ban the indicated player from the server. A banned player, when they try to login, will be displayed the message:You are banned for [duration]: [reason]- [modname]. A banned player may then be un-banned by editing the file "banlist.txt," which is located in the Terraria folder. This document contains a list of all currently banned players. To un-ban a player, delete the player's name and IP address from the list.
 
 ```
-Note: no forward-slash `/` is needed before the command, as some command interfaces require.
+*Note: no forward-slash `/` is needed before the command, as some command interfaces require.*
