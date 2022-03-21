@@ -1,5 +1,5 @@
 <a href="https://www.buymeacoffee.com/hexlo" target="_blank">  
- <img src="./assets/yellow-button-256w.png" alt="Buy me a coffee!" width="256" height="76" target="_blank">  
+ <img src="./assets/yellow-button-256w.png" target="_blank" alt="Buy me a coffee!" width="256" height="76" >  
 </a>  
 
 ```
