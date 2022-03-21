@@ -61,7 +61,7 @@ services:
 Image tag (Docker Hub): _**hexlo/terraria-server-docker:calamity-latest**_ \
 Image mirror (Github): _**ghcr.io/hexlo/terraria-server-docker:calamity-latest**_
 
-### Also Includes these Mods:
+### This Version also Includes these Mods:
 - [BossChecklist](https://github.com/JavidPack/BossChecklist/releases/latest)
 - [RecipeBrowser](https://github.com/JavidPack/RecipeBrowser/releases/latest)
 - [MagicStorageExtra](https://github.com/ExterminatorX99/MagicStorageExtra/releases/latest)
