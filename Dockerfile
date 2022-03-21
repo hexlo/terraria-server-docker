@@ -56,15 +56,6 @@ RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
     && cd /terraria-server/Linux \
     && chmod +x TerrariaServer.bin.x86_64*
 
-# RUN mkdir -p /terraria-server /root/.local/share/Terraria/Worlds/ \
-#     && wget -O terraria-server.zip ${DOWNLOAD_URL} \
-#     && unzip terraria-server.zip -d /terraria-server && rm terraria-server.zip && rm -Rf /terraria-server/*/Windows /terraria-server/*/Mac \
-#     && cd /terraria-server/*/Linux \
-#     # && wget -O terraria-server.zip ${SELF_HOSTED_DOWNLOAD_URL} \
-#     # && tar -xf terraria-server.zip -C /terraria-server --strip-components=1\
-#     # && cd /terraria-server/*/Linux \
-#     && chmod +x TerrariaServer.bin.x86_64* 
-
 COPY ./init.sh /terraria-server/Linux/
 
 RUN chmod +x /terraria-server/Linux/init.sh
