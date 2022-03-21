@@ -1,6 +1,4 @@
-<a href="https://www.buymeacoffee.com/hexlo" target="_blank">
- <img src="./assets/yellow-button-256w.png" alt="Buy me a coffee!" width="256" height="76" >
-</a>  
+[![Buy me a coffee](https://github.com/hexlo/terraria-server-docker/raw/gh-pages/assets/yellow-button-256w.png)](https://www.buymeacoffee.com/hexlo)
 
 ```
  __  __     ______     __  __     __         ______    
@@ -11,14 +9,15 @@
 ```
 [GitHub Page](https://terraria.hexlo.io)
 
-### There is a new image available!
-A Terraria Modded Server using The Calamity Mod. [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
+### ***There is a new image available!***
+A Terraria Modded Server with [tModLoader](https://github.com/tModLoader/tModLoader/wiki).   
+[See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
 
-# Terraria vanilla server
+# **Terraria vanilla server**
 Docker Hub mirror: [hexlo/terraria-server-docker](https://hub.docker.com/r/hexlo/terraria-server-docker)
 
 
-### General Config
+## **General Config**
 - Have a `worlds` folder at the root of your directory structure (you can have it anywhere, but change the volume binds accordingly)
 - Put your worlds in the worlds folder
 - When you create a container, map the port to 7777 internally, ie.: 1234:7777 (then forward port to 1234 in this case)
@@ -33,11 +32,11 @@ To dettach without stopping the container:
 `ctrl+p ctrl+q`
 
 
-### Important!
+### **Important!**
 If you want the server to start automatically, you need to provide a world path by defining the environment variable `world` as shown bellow.
 
 
-### docker-compose.yml exemple for Vanilla Server:
+### ***docker-compose.yml exemple for Vanilla Server:***
 ```
 version: '3'
 services:
@@ -61,31 +60,40 @@ services:
       - port=7777
       - password=mypassword
 ```
-# Terraria Server - Calamity Mod using tModLoader
-Image tag (Docker Hub): _**hexlo/terraria-server-docker:calamity-latest**_ \
-Image mirror (Github): _**ghcr.io/hexlo/terraria-server-docker:calamity-latest**_
+# **Terraria Server - Calamity Mod using tModLoader**
+Image tag (Docker Hub): _**hexlo/terraria-server-docker:tmodloader-latest**_ \
+Image mirror (Github): _**ghcr.io/hexlo/terraria-server-docker:tmodloader-latest**_
 
-### Important!
-
-**On the Client** (your computer):  
-You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. Launch tModLoader and download these 2 mods: 
-- CalamityMod
-- CalamityModMusic  
+### This Version also Includes these Mods:
+- [BossChecklist](https://github.com/JavidPack/BossChecklist/releases/latest)
+- [RecipeBrowser](https://github.com/JavidPack/RecipeBrowser/releases/latest)
+- [MagicStorageExtra](https://github.com/ExterminatorX99/MagicStorageExtra/releases/latest)
+- [ThoriumMod](https://github.com/SamsonAllen13/ThoriumMod/releases/latest) (disabled by default)
 <!-- end of the list -->
+To use these, you also need to install them via tModLoader's Mods Browser on your client.  
+To enable or disable mods on the server, modify the `enabled.json` file with the names of the mods. This needs to be done before starting the container.  
+Some mods may clash with each others, especially big content mods. Refer to the mods wiki for more info.
 
-Make sure you enable them and or reload them via the *Mods* menu.  
+## **Important!**  
 
-**On the server**:  
+### <ins> On the Client (your computer): <ins/>
+
+You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. Launch tModLoader and download the same mods that are active on the server.  
+
+Make sure you enable them and or reload them via the *Mod's* menu on your tModLoader client.  
+  
+
+### <ins> On the server: <ins/>   
 If the server gets out of date, make sure you recreate the container to update it.  
-Worlds and players created with 1.4 or newer will not work with the mod. (as of today).
-
-### docker-compose.yml exemple for Calamity Modded Server:
+Worlds and players created with 1.4 or newer will not work with tModLoader. (as of today).  
+Refer to the `enabled.json` file to know which mods are active or not, and match them on your client. 
+### ***docker-compose.yml exemple for tModLoader Server:***
 ```
 version: '3.2'
 services:
-  terraria-calamity-server:
-    # Github mirror: ghcr.io/hexlo/terraria-server-docker:calamity-latest
-    image: hexlo/terraria-server-docker:calamity-latest
+  terraria-tmodloader-server:
+    # Github mirror: ghcr.io/hexlo/terraria-server-docker:tmodloader-latest
+    image: hexlo/terraria-server-docker:tmodloader-latest
     container_name: terraria-server-Calamity0
     restart: always
     stdin_open: true
@@ -104,9 +112,9 @@ services:
       - password=calam
       - motd="Welcome to Hexlo's server! :)"
 ```
-### Other Info
+## <ins> **Other Info** <ins/>
 
-### environment variables (case-sensitive!):
+### ***environment variables (case-sensitive!):***
 
 | Env variable | Default value | Description | Example |
 | :------------- | :----------: | :----------- | :----------- |
@@ -127,8 +135,9 @@ services:
 | `npcstream` | `1` | Reduces enemy skipping but increases bandwidth usage. The lower the number the less skipping will happen, but more data is sent. 0 is off. | `npcstream=60` |
 | `priority` | (*empty*) | Sets the process priority | `priority=1` |
 
+<br>
 
-##### Important!
+## **Important!**
 
 - If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually. If you create a new world, it will be saved in the path defined by the environment variable `worldpath`.
 
@@ -137,10 +146,11 @@ services:
  3. Go through the options
  4. Detach from the container by pressing `ctrl+p` + `ctrl+q`
 
-- If, after creating your world with a specific seed, the server still doesn't initializes automatically, be sure to comment or remove the `seed=<yourseed>` variable in the docker-compose.yml file.
+- If, after creating your world with a specific seed, the server still doesn't initializes automatically, be sure to comment or remove the `seed=<yourseed>` variable in the docker-compose.yml file.  
 
+<br>
 
-### List of server-side console commands from the [unofficial wiki](https://terraria.fandom.com/wiki/Server#Server_files)
+### **List of server-side console commands from the [unofficial wiki](https://terraria.fandom.com/wiki/Server#Server_files)**
 
 Once a dedicated server is running, the following commands can be run.\
 First, attach to the container with `docker attach <container name>`.
@@ -173,4 +183,4 @@ Banning and un-banning
 The command ban <player> will ban the indicated player from the server. A banned player, when they try to login, will be displayed the message:You are banned for [duration]: [reason]- [modname]. A banned player may then be un-banned by editing the file "banlist.txt," which is located in the Terraria folder. This document contains a list of all currently banned players. To un-ban a player, delete the player's name and IP address from the list.
 
 ```
-Note: no forward-slash `/` is needed before the command, as some command interfaces require.
+*Note: no forward-slash `/` is needed before the command, as some command interfaces require.*
