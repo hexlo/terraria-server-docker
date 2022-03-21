@@ -1,4 +1,7 @@
-[![Buy me a coffee](./assets/yellow-button-256w.png)](https://www.buymeacoffee.com/hexlo)  
+<a href="https://www.buymeacoffee.com/hexlo" target="_blank">
+ <img src="./assets/yellow-button-256w.png" alt="Buy me a coffee!" width="256" height="76">
+</a>  
+<!-- [![Buy me a coffee](./assets/yellow-button-256w.png)](https://www.buymeacoffee.com/hexlo)   -->
 [GitHub Page](https://terraria.hexlo.io)
 ```
  __  __     ______     __  __     __         ______    
