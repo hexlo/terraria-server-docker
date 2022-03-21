@@ -20,6 +20,9 @@ pipeline {
     versionTag = ''
   }
   agent any
+  triggers {
+        cron('H H(4-8) * * *')
+  }
   stages {
     stage('Cloning Git') {
       steps {
