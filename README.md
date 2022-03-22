@@ -10,7 +10,7 @@
 [GitHub Page](https://terraria.hexlo.io)
 
 ### ***There is a new image available!***
-A Terraria Modded Server with [tModLoader](https://github.com/tModLoader/tModLoader/wiki).   
+A Terraria Modded Server with tModLoader.   
 [See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
 
 # **Terraria vanilla server**
