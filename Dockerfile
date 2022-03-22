@@ -52,17 +52,18 @@ RUN mkdir -p /terraria-server/info /root/.local/share/Terraria/Worlds/ \
     && echo "${VER}" > /terraria-server/info/version.txt \
     && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${VER}.zip --output terraria-server.zip \  
     && unzip terraria-server.zip -d /terraria-server && mv /terraria-server/*/* /terraria-server \
-    && rm terraria-server.zip && rm -rf /terraria-server/Mac && rm -rf /terraria-server/Windows \
-    && cd /terraria-server/Linux \
+    && rm -rf terraria-server.zip /terraria-server/Mac /terraria-server/Windows /terraria-server/${VER} \
+    && mv /terraria-server/Linux/* /terraria-server/ \
+    && cd /terraria-server \
     && chmod +x TerrariaServer.bin.x86_64*
 
-COPY ./init.sh /terraria-server/Linux/
+COPY ./init.sh /terraria-server/
 
-RUN chmod +x /terraria-server/Linux/init.sh
+RUN chmod +x /terraria-server/init.sh
 
 VOLUME ["/root/.local/share/Terraria/Worlds/"]
 
-WORKDIR /terraria-server/Linux
+WORKDIR /terraria-server
 
 ENTRYPOINT [ "./init.sh" ]
 
