@@ -7,36 +7,63 @@
  \ \_\ \_\  \ \_____\   /\_\/\_\  \ \_____\  \ \_____\ 
   \/_/\/_/   \/_____/   \/_/\/_/   \/_____/   \/_____/ 
 ```
-[GitHub Page](https://terraria.hexlo.io)
+<br>
+<p style="color:#AA78d7; font-family: Consolas; font-weight: bold; font-size: 18px;">
+  ===> New tModLoader Server available! : <a href="https://github.com/hexlo/terraria-tmodloader-server">
+hexlo/terraria-tmodloader-server</a> 
+</p>
 
-### ***There is a new image available!***
-A Terraria Modded Server with [tModLoader](https://github.com/tModLoader/tModLoader/wiki).   
-[See below](#Terraria-Server---Calamity-Mod-using-tModLoader)
+# **Terraria Vanilla Server**
 
-# **Terraria vanilla server**
-Docker Hub mirror: [hexlo/terraria-server-docker](https://hub.docker.com/r/hexlo/terraria-server-docker)
+### This is a Vanilla server for Terraria PC, packaged as a docker image.  
+<br>
 
+<p style="color:#0078d7; font-family: Consolas; font-weight: bold;">
+  <ins> Docker Hub image: </ins>
+</p>
 
-## **General Config**
-- Have a `worlds` folder at the root of your directory structure (you can have it anywhere, but change the volume binds accordingly)
-- Put your worlds in the worlds folder
-- When you create a container, map the port to 7777 internally, ie.: 1234:7777 (then forward port to 1234 in this case)
-- Add a volume for the worlds mounted inside the container:
-`./worlds:/root/.local/share/Terraria/Worlds/`
-- You can create a new world or select different world (located in the world folder above) by starting a container and attaching to it
-`docker attach <container-name>`
-- press enter
-- choose the options you wish
+```
+hexlo/terraria-server-docker:latest
+```
 
-To dettach without stopping the container:
-`ctrl+p ctrl+q`
+<p style="color:#0078d7; font-family: Consolas; font-weight: bold;">
+  <ins> Github image: </ins>
+</p>
 
+```
+ghcr.io/hexlo/terraria-server-docker:latest
+```
 
-### **Important!**
-If you want the server to start automatically, you need to provide a world path by defining the environment variable `world` as shown bellow.
+<br>
 
+---
 
-### ***docker-compose.yml exemple for Vanilla Server:***
+<br>
+
+## <ins> **Requirements** </ins>
+
+***Server-side:***
+- Docker
+- docker-compose (recommended)
+
+***Client-side:***
+- Terraria
+
+<br>
+
+---
+
+<br>
+
+## <ins> **General Config** </ins>
+
+- Either clone this repo or create a folder called Worlds
+- Create a `docker-compose.yml` at the same level as the Worlds folder (see example below)
+- Edit the environment variables as you see fit. They are explained in a table further down.
+
+<br>
+
+### ***docker-compose.yml example:***
 ```
 version: '3'
 services:
@@ -59,62 +86,67 @@ services:
       - maxplayers=8
       - port=7777
       - password=mypassword
+      - motd="Welcome to hexlo's server! :)"
 ```
-# **Terraria Server - Calamity Mod using tModLoader**
-Image tag (Docker Hub): _**hexlo/terraria-server-docker:tmodloader-latest**_ \
-Image mirror (Github): _**ghcr.io/hexlo/terraria-server-docker:tmodloader-latest**_
+- Launch the container. If you are using a command line interface (cli):  
+`docker-compose up -d`
 
-### This Version also Includes these Mods:
-- [BossChecklist](https://github.com/JavidPack/BossChecklist/releases/latest)
-- [RecipeBrowser](https://github.com/JavidPack/RecipeBrowser/releases/latest)
-- [MagicStorageExtra](https://github.com/ExterminatorX99/MagicStorageExtra/releases/latest)
-- [ThoriumMod](https://github.com/SamsonAllen13/ThoriumMod/releases/latest) (disabled by default)
-<!-- end of the list -->
-To use these, you also need to install them via tModLoader's Mods Browser on your client.  
-To enable or disable mods on the server, modify the `enabled.json` file with the names of the mods. This needs to be done before starting the container.  
-Some mods may clash with each others, especially big content mods. Refer to the mods wiki for more info.
+<br>
 
-## **Important!**  
+---
 
-### <ins> On the Client (your computer): <ins/>
+<br>
 
-You need tModLoader to play on this version of the server. Download it through steam and keep it up to date. Launch tModLoader and download the same mods that are active on the server.  
+## <ins> **Creating and using Worlds** </ins>
 
-Make sure you enable them and or reload them via the *Mod's* menu on your tModLoader client.  
-  
+### ***Using existing worlds***
+Terraria worlds have a `.wld` extention  
+If you have a compatible world already that you would like to use, you can simply put the file in the `Worlds` directory and make sure the `world` variable is set to match it's name.   
 
-### <ins> On the server: <ins/>   
-If the server gets out of date, make sure you recreate the container to update it.  
-Worlds and players created with 1.4 or newer will not work with tModLoader. (as of today).  
-Refer to the `enabled.json` file to know which mods are active or not, and match them on your client. 
-### ***docker-compose.yml exemple for tModLoader Server:***
+### ***Creating a new world***
+There is two ways to create a new world.
+1. Using variables in the `docker-compose.yml` file (recommended)
+2. By spinning a container, manually attaching to it and going through the command prompts of the terraria server.
+
+<ins> 1. Using variables in the docker-compose.yml file: </ins>
+
+You need to set certain variables in the `environment:` part of the docker-compose.yml file, as follows:
 ```
-version: '3.2'
-services:
-  terraria-tmodloader-server:
-    # Github mirror: ghcr.io/hexlo/terraria-server-docker:tmodloader-latest
-    image: hexlo/terraria-server-docker:tmodloader-latest
-    container_name: terraria-server-Calamity0
-    restart: always
-    stdin_open: true
-    tty: true
-    ports:
-      - 7782:7777
-    volumes:
-      - type: bind
-        source: ./Worlds
-        target: /root/.local/share/Terraria/ModLoader/Worlds/
+...
     environment:
-      - world=/root/.local/share/Terraria/ModLoader/Worlds/Calamity0.wld
+      - world=/root/.local/share/Terraria/Worlds/world1.wld
       - autocreate=2
-      - worldname=Calamity0
+      - worldname=world1
       - difficulty=1
-      - password=calam
-      - motd="Welcome to Hexlo's server! :)"
+...
 ```
-## <ins> **Other Info** <ins/>
+*Note: the description and possible values of these variables are described in a table below*
 
-### ***environment variables (case-sensitive!):***
+<ins> 2. Manually create a world: </ins>
+
+You can create a new world or select different world served by a container by attaching to it.  
+`docker attach <container-name>`
+- press enter
+- Go through the options
+
+To dettach without stopping the container:
+`ctrl+p ctrl+q`
+
+<br>
+
+### **Important!**
+If you want the server to start automatically on subsequent runs, you need to provide a world path to an existing world, by defining the environment variable `world` as shown in the exemple above.
+
+<br>
+
+---
+
+<br>
+
+## <ins> ***Environment Variables*** </ins>
+
+*Note: These are case-sensitive!*  
+
 
 | Env variable | Default value | Description | Example |
 | :------------- | :----------: | :----------- | :----------- |
@@ -137,9 +169,9 @@ services:
 
 <br>
 
-## **Important!**
+### <ins> **Important!** </ins>
 
-- If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually. If you create a new world, it will be saved in the path defined by the environment variable `worldpath`.
+If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually. If you create a new world, it will be saved in the path defined by the environment variable `worldpath`.
 
  1. `docker attach <container name>`
  2. press _*enter*_
@@ -150,7 +182,11 @@ services:
 
 <br>
 
-### **List of server-side console commands from the [unofficial wiki](https://terraria.fandom.com/wiki/Server#Server_files)**
+---
+
+<br>
+
+## <ins> **List of server-side console commands from the [unofficial wiki](https://terraria.fandom.com/wiki/Server#Server_files)** </ins>
 
 Once a dedicated server is running, the following commands can be run.\
 First, attach to the container with `docker attach <container name>`.
