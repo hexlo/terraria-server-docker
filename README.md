@@ -57,8 +57,8 @@ ghcr.io/hexlo/terraria-server-docker:latest
 
 ## <ins> **General Config** </ins>
 
-- Clone this repository
-- Create a `docker-compose.yml` (see example below)
+- Either clone this repo or create a folder called Worlds
+- Create a `docker-compose.yml` at the same level as the Worlds folder (see example below)
 - Edit the environment variables as you see fit. They are explained in a table further down.
 
 <br>
