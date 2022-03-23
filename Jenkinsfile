@@ -21,7 +21,7 @@ pipeline {
   }
   agent any
   triggers {
-        cron('H H(4-8) * * *')
+        cron('H H(4-6) * * *')
   }
   stages {
     stage('Cloning Git') {
@@ -34,30 +34,25 @@ pipeline {
         script {
           echo "tag=${tag}"
           if (tag == 'latest') {
-            serverVersion = sh(script: "${WORKSPACE}/get-latest-version.sh", , returnStdout: true).trim()
+            latestVersion = sh(script: "${WORKSPACE}/.scripts/get-terraria-version.sh", returnStdout: true).trim()
+            versionTag = sh(script: "echo $latestVersion | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout:true).trim()
           }
           else {
-            serverVersion = buildVersion
+            versionTag = sh(script: "echo $buildVersion | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout:true).trim()
           }
-          
-          versionTag = sh(script: "echo $serverVersion | sed 's/./&./g;s/\\.\$//'", , returnStdout:true).trim()
-          echo "serverVersion=${serverVersion}"
           echo "versionTag=${versionTag}"
           echo "buildVersion=${buildVersion}"
-          
         }
       }
     }
     stage('Building image') {
       steps{
         script {
-          date = sh "echo \$(date +%Y-%m-%d:%H:%M:%S)"
-          echo "date=$date"
           // Docker Hub
-          dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
+          dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} ." )
           
           // Github
-          githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} --build-arg CACHE_DATE=$date ." )
+          githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} ." )
         }
       }
     }
