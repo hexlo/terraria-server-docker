@@ -62,6 +62,7 @@ RUN if [ "${TERRARIA_VERSION}" = "latest" ]; then \
     && unzip terraria-server.zip -d /terraria-server && mv /terraria-server/*/* /terraria-server \
     && rm -rf terraria-server.zip /terraria-server/Mac /terraria-server/Windows /terraria-server/${TERRARIA_VERSION} \
     && mv /terraria-server/Linux/* /terraria-server/ \
+    && rm -rf /terraria-server/Linux \
     && cd /terraria-server \
     && chmod +x TerrariaServer.bin.x86_64*
 
