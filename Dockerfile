@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM rockylinux:8.5
 
 ARG VERSION=latest
 
@@ -48,7 +48,7 @@ RUN chmod +x /scripts/*
 
 RUN mv /scripts/init-TerrariaServer.sh /terraria-server
 
-RUN apt update && apt install -y unzip curl
+RUN dnf update -y && dnf install -y unzip curl
 
 WORKDIR /terraria-server
 
