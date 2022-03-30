@@ -1,8 +1,9 @@
+!Dockerfile
+!README.md
+!docker-compose-example.yml
 terraria-server.zip
 terraria-server/
-!Dockerfile
-!docker-compose.yml
-!README.md
+docker-compose.yml
 
 worlds/*
 !worlds/.gitkeep

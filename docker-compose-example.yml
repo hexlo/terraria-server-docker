@@ -1,0 +1,19 @@
+version: '3.2'
+services: 
+  terraria-server:
+    # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
+    image: hexlo/terraria-server-docker:latest
+    container_name: terraria-server
+    restart: unless-stopped
+    stdin_open: true
+    tty: true     
+    ports:
+      - 7779:7777
+    volumes:
+      - type: bind
+        source: ./worlds
+        target: /root/.local/share/Terraria/Worlds/
+    environment:
+      - world=/root/.local/share/Terraria/Worlds/newworld.wld
+      - password=passworld
+      - motd="Welcome to North's server! :)"
