@@ -6,3 +6,5 @@ terraria-server/
 
 worlds/*
 !worlds/.gitkeep
+
+backups/
