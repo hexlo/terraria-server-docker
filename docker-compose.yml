@@ -1,10 +1,9 @@
-version: '3.2'
 services: 
   terraria-server:
     # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
     image: hexlo/terraria-server-docker:latest
     container_name: terraria-server
-    restart: always
+    restart: unless-stopped
     networks:
       - traefik_net
     stdin_open: true
@@ -14,9 +13,9 @@ services:
     volumes:
       - type: bind
         source: ./worlds
-        target: /root/.local/share/Terraria/Worlds/
+        target: /terraria-server/Worlds
     environment:
-      - world=/root/.local/share/Terraria/Worlds/newworld.wld
+      - world=/terraria-server/Worlds/newworld.wld
       - password=passworld
       - motd="Welcome to North's server! :)"
     labels:
@@ -26,7 +25,7 @@ services:
     # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
     image: hexlo/terraria-server-docker:latest
     container_name: terraria-hamlet
-    restart: always
+    restart: unless-stopped
     networks:
       - traefik_net
     stdin_open: true
@@ -36,9 +35,9 @@ services:
     volumes: 
       - type: bind
         source: ./worlds
-        target: /root/.local/share/Terraria/Worlds/
+        target: /terraria-server/Worlds
     environment:
-      - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
+      - world=/terraria-server/Worlds/The_Hamlet_of_Snatchers.wld
       - password=hamlet
       - motd="Welcome to North's server! :)"
     labels:
@@ -48,7 +47,7 @@ services:
     # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
     image: hexlo/terraria-server-docker:latest
     container_name: terraria-masterworld
-    restart: always
+    restart: unless-stopped
     networks:
       - traefik_net
     stdin_open: true
@@ -58,9 +57,9 @@ services:
     volumes:
       - type: bind
         source: ./worlds
-        target: /root/.local/share/Terraria/Worlds/
+        target: /terraria-server/Worlds
     environment:
-      - world=/root/.local/share/Terraria/Worlds/MasterWorld.wld
+      - world=/terraria-server/Worlds/MasterWorld.wld
       - autocreate=2
       - worldname=MasterWorld
       - difficulty=2
@@ -73,7 +72,7 @@ services:
     # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
     image: hexlo/terraria-server-docker:latest
     container_name: terraria-theconstant
-    restart: always
+    restart: unless-stopped
     networks:
       - traefik_net
     stdin_open: true
@@ -83,9 +82,9 @@ services:
     volumes: 
       - type: bind
         source: ./worlds
-        target: /root/.local/share/Terraria/Worlds/
+        target: /terraria-server/Worlds
     environment:
-      - world=/root/.local/share/Terraria/Worlds/TheConstant1.wld
+      - world=/terraria-server/Worlds/TheConstant1.wld
       - autocreate=2
       - worldname=TheConstant1
       - difficulty=1
@@ -94,29 +93,29 @@ services:
       - motd="Welcome to North's server! :)"
     labels:
       com.centurylinklabs.watchtower.enable: true
-      
-  terraria-mobile1:
+
+  terraria-labor:
     # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
-    image: hexlo/terraria-server-docker:1.4.3.2
-    container_name: terraria-mobile1
-    restart: always
+    image: hexlo/terraria-server-docker:1.4.4-test
+    container_name: terraria-labor
+    restart: unless-stopped
     networks:
       - traefik_net
     stdin_open: true
-    tty: true
+    tty: true     
     ports:
-      - 7785:7777
+      - 7783:7777
     volumes:
       - type: bind
         source: ./worlds
-        target: /root/.local/share/Terraria/Worlds/
+        target: /terraria-server/Worlds
     environment:
-      - world=/root/.local/share/Terraria/Worlds/mobile1.wld
-      - autocreate=2
-      - worldname=mobile1
-      - difficulty=1
-      - password=mobile1
-      - motd="Welcome to North's server! :)"
+      - world=/terraria-server/Worlds/labor1.wld
+      - autocreate=1
+      - worldname=labor
+      - difficulty=2
+      - password=passworld
+      - motd="Welcome to hexlo's server! :)"
     labels:
       com.centurylinklabs.watchtower.enable: true
 

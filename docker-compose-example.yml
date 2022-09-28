@@ -12,8 +12,8 @@ services:
     volumes:
       - type: bind
         source: ./Worlds
-        target: /root/.local/share/Terraria/Worlds/
+        target: /terraria-server/Worlds
     environment:
-      - world=/root/.local/share/Terraria/Worlds/newworld.wld
-      - password=passworld
-      - motd="Welcome to North's server! :)"
+      - world=/terraria-server/Worlds/newworld.wld
+      - password=hello
+      - motd="Welcome to my server! :)"

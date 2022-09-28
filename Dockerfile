@@ -1,4 +1,4 @@
-FROM rockylinux:8.5
+FROM rockylinux:9 as builder
 
 ARG VERSION=144
 
@@ -8,39 +8,37 @@ ENV LATEST_VERSION=""
 
 ENV PATH="/scripts:${PATH}"
 
-ENV autocreate=2
+# ENV autocreate=2
 
-ENV seed=
+# ENV seed=
 
-ENV worldname=TerrariaWorld
+# ENV worldname=TerrariaWorld
 
-ENV difficulty=0
+# ENV difficulty=0
 
-ENV maxplayers=16
+# ENV maxplayers=16
 
-ENV port=7777
+# ENV port=7777
 
-ENV password=''
+# ENV password=''
 
-ENV motd="Welcome!"
+# ENV motd="Welcome!"
 
-ENV worldpath=/root/.local/share/Terraria/Worlds/
+# ENV worldpath=/root/.local/share/Terraria/Worlds/
 
-ENV banlist=banlist.txt
+# ENV banlist=banlist.txt
 
-ENV secure=1
+# ENV secure=1
 
-ENV language=en/US
+# ENV language=en/US
 
-ENV upnp=1
+# ENV upnp=1
 
-ENV npcstream=1
+# ENV npcstream=1
 
-ENV priority=1
+# ENV priority=1
 
-RUN mkdir -p /root/.local/share/Terraria/Worlds/ \
-    /scripts \
-    /terraria-server
+RUN mkdir -p /scripts /terraria-server
 
 COPY ./.scripts /scripts
 
@@ -66,9 +64,47 @@ RUN if [ "${TERRARIA_VERSION}" = "latest" ]; then \
     && cd /terraria-server \
     && chmod +x TerrariaServer.bin.x86_64*
 
-VOLUME ["/root/.local/share/Terraria/Worlds/"]
+####################################################################
+
+FROM rockylinux:9-minimal
+
+RUN mkdir -p /terraria-server/Worlds
+
+ENV autocreate=2
+
+ENV seed=
+
+ENV worldname=TerrariaWorld
+
+ENV difficulty=0
+
+ENV maxplayers=16
+
+ENV port=7777
+
+ENV password=''
+
+ENV motd="Welcome!"
+
+ENV worldpath=/terraria-server/Worlds
+
+ENV banlist=banlist.txt
+
+ENV secure=1
+
+ENV language=en/US
+
+ENV upnp=1
+
+ENV npcstream=1
+
+ENV priority=1
 
 WORKDIR /terraria-server
+
+COPY --from=builder /terraria-server/* ./
+
+VOLUME ["/terraria-server/Worlds"]
 
 ENTRYPOINT [ "./init-TerrariaServer.sh" ]
 
