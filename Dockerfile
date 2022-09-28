@@ -8,36 +8,6 @@ ENV LATEST_VERSION=""
 
 ENV PATH="/scripts:${PATH}"
 
-# ENV autocreate=2
-
-# ENV seed=
-
-# ENV worldname=TerrariaWorld
-
-# ENV difficulty=0
-
-# ENV maxplayers=16
-
-# ENV port=7777
-
-# ENV password=''
-
-# ENV motd="Welcome!"
-
-# ENV worldpath=/root/.local/share/Terraria/Worlds/
-
-# ENV banlist=banlist.txt
-
-# ENV secure=1
-
-# ENV language=en/US
-
-# ENV upnp=1
-
-# ENV npcstream=1
-
-# ENV priority=1
-
 RUN mkdir -p /scripts /terraria-server
 
 COPY ./.scripts /scripts
