@@ -40,6 +40,18 @@ ghcr.io/hexlo/terraria-server-docker:latest
 
 <br>
 
+## <ins> **1.4.4 Notes** </ins>
+
+If you have been using a previous version, read carefully:
+
+The World's directory inside the container has changed! The new location is `/terraria-server/Worlds` (instead of `/root/.local/share/Terraria/Worlds`). You need to adjust your bind mounts accordingly.
+
+<br>
+
+---
+
+<br>
+
 ## <ins> **Requirements** </ins>
 
 ***Server-side:***
