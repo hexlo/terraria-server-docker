@@ -11,7 +11,7 @@ services:
       - 7779:7777
     volumes:
       - type: bind
-        source: ./worlds
+        source: ./Worlds
         target: /root/.local/share/Terraria/Worlds/
     environment:
       - world=/root/.local/share/Terraria/Worlds/newworld.wld
