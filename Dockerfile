@@ -1,6 +1,6 @@
 FROM rockylinux:9 as builder
 
-ARG VERSION=144
+ARG VERSION=latest
 
 ENV TERRARIA_VERSION=$VERSION
 
