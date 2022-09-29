@@ -1,6 +1,6 @@
-FROM rockylinux:9 as builder
+FROM ubuntu:jammy as builder
 
-ARG VERSION=latest
+ARG VERSION=1441-fixed
 
 ENV TERRARIA_VERSION=$VERSION
 
@@ -8,37 +8,41 @@ ENV LATEST_VERSION=""
 
 ENV PATH="/scripts:${PATH}"
 
-RUN mkdir -p /scripts /terraria-server
+ENV TERRARIA_DIR=/root/.local/share/Terraria
+
+RUN mkdir -p /scripts ${TERRARIA_DIR}
 
 COPY ./.scripts /scripts
 
 RUN chmod +x /scripts/*
 
-RUN mv /scripts/init-TerrariaServer.sh /terraria-server
+RUN mv /scripts/init-TerrariaServer.sh ${TERRARIA_DIR}
 
-RUN dnf update -y && dnf install -y unzip curl
+RUN apt update -y && apt install -y unzip curl
 
-WORKDIR /terraria-server
+WORKDIR ${TERRARIA_DIR}
 
 RUN if [ "${TERRARIA_VERSION}" = "latest" ]; then \
         echo "using latest version." \
-    &&  export LATEST_VERSION=$(/scripts/get-terraria-version.sh) \
+    &&  export LATEST_VERSION=$(get-terraria-version.sh) \
     &&  export TERRARIA_VERSION=${LATEST_VERSION}; fi \
     && echo "TERRARIA_VERSION=${TERRARIA_VERSION}" \
-    && echo "${TERRARIA_VERSION}" > /terraria-server/terraria-version.txt \
+    && echo "${TERRARIA_VERSION}" > ${TERRARIA_DIR}terraria-version.txt \
     && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip --output terraria-server.zip \  
-    && unzip terraria-server.zip -d /terraria-server && mv /terraria-server/*/* /terraria-server \
-    && rm -rf terraria-server.zip /terraria-server/Mac /terraria-server/Windows /terraria-server/${TERRARIA_VERSION} \
-    && mv /terraria-server/Linux/* /terraria-server/ \
-    && rm -rf /terraria-server/Linux \
-    && cd /terraria-server \
+    && unzip terraria-server.zip -d ${TERRARIA_DIR} && mv ${TERRARIA_DIR}/*/* ${TERRARIA_DIR} \
+    && rm -rf terraria-server.zip ${TERRARIA_DIR}/Mac ${TERRARIA_DIR}/Windows ${TERRARIA_DIR}/${TERRARIA_VERSION} \
+    && mv ${TERRARIA_DIR}/Linux/* ${TERRARIA_DIR}/ \
+    && rm -rf ${TERRARIA_DIR}/Linux \
+    && cd ${TERRARIA_DIR} \
     && chmod +x TerrariaServer.bin.x86_64*
 
 ####################################################################
 
-FROM rockylinux:9-minimal
+FROM ubuntu:jammy
 
-RUN mkdir -p /terraria-server/Worlds
+ENV TERRARIA_DIR=/root/.local/share/Terraria
+
+RUN mkdir -p ${TERRARIA_DIR}/Worlds
 
 ENV autocreate=2
 
@@ -56,7 +60,7 @@ ENV password=''
 
 ENV motd="Welcome!"
 
-ENV worldpath=/terraria-server/Worlds
+ENV worldpath=${TERRARIA_DIR}/Worlds
 
 ENV banlist=banlist.txt
 
@@ -70,11 +74,11 @@ ENV npcstream=1
 
 ENV priority=1
 
-WORKDIR /terraria-server
+WORKDIR ${TERRARIA_DIR}
 
-COPY --from=builder /terraria-server/* ./
+COPY --from=builder ${TERRARIA_DIR}/* ./
 
-VOLUME ["/terraria-server/Worlds"]
+VOLUME ["/root/.local/share/Terraria/Worlds"]
 
 ENTRYPOINT [ "./init-TerrariaServer.sh" ]
 

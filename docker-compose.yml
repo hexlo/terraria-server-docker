@@ -13,9 +13,9 @@ services:
     volumes:
       - type: bind
         source: ./worlds
-        target: /terraria-server/Worlds
+        target: /root/.local/share/Terraria/Worlds
     environment:
-      - world=/terraria-server/Worlds/newworld.wld
+      - world=/root/.local/share/Terraria/Worlds/newworld.wld
       - password=passworld
       - motd="Welcome to North's server! :)"
     labels:
@@ -35,9 +35,9 @@ services:
     volumes: 
       - type: bind
         source: ./worlds
-        target: /terraria-server/Worlds
+        target: /root/.local/share/Terraria/Worlds
     environment:
-      - world=/terraria-server/Worlds/The_Hamlet_of_Snatchers.wld
+      - world=/root/.local/share/Terraria/Worlds/The_Hamlet_of_Snatchers.wld
       - password=hamlet
       - motd="Welcome to North's server! :)"
     labels:
@@ -57,9 +57,9 @@ services:
     volumes:
       - type: bind
         source: ./worlds
-        target: /terraria-server/Worlds
+        target: /root/.local/share/Terraria/Worlds
     environment:
-      - world=/terraria-server/Worlds/MasterWorld.wld
+      - world=/root/.local/share/Terraria/Worlds/MasterWorld.wld
       - autocreate=2
       - worldname=MasterWorld
       - difficulty=2
@@ -82,9 +82,9 @@ services:
     volumes: 
       - type: bind
         source: ./worlds
-        target: /terraria-server/Worlds
+        target: /root/.local/share/Terraria/Worlds
     environment:
-      - world=/terraria-server/Worlds/TheConstant1.wld
+      - world=/root/.local/share/Terraria/Worlds/TheConstant1.wld
       - autocreate=2
       - worldname=TheConstant1
       - difficulty=1
@@ -96,7 +96,7 @@ services:
 
   terraria-labor:
     # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
-    image: hexlo/terraria-server-docker:1.4.4-test
+    image: hexlo/terraria-server-docker:latest
     container_name: terraria-labor
     restart: unless-stopped
     networks:
@@ -108,11 +108,11 @@ services:
     volumes:
       - type: bind
         source: ./worlds
-        target: /terraria-server/Worlds
+        target: /root/.local/share/Terraria/Worlds
     environment:
-      - world=/terraria-server/Worlds/labor1.wld
+      - world=/root/.local/share/Terraria/Worlds/labor1.wld
       - autocreate=1
-      - worldname=labor
+      - worldname=labor1
       - difficulty=2
       - password=passworld
       - motd="Welcome to hexlo's server! :)"

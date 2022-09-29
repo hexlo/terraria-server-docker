@@ -1,4 +1,3 @@
-version: '3.2'
 services: 
   terraria-server:
     # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
@@ -12,8 +11,8 @@ services:
     volumes:
       - type: bind
         source: ./Worlds
-        target: /terraria-server/Worlds
+        target: /root/.local/share/Terraria/Worlds
     environment:
-      - world=/terraria-server/Worlds/newworld.wld
+      - world=/root/.local/share/Terraria/Worlds/newworld.wld
       - password=hello
       - motd="Welcome to my server! :)"

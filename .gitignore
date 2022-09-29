@@ -9,3 +9,4 @@ worlds/*
 !worlds/.gitkeep
 
 backups/
+build.txt
