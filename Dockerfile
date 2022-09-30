@@ -1,6 +1,6 @@
 FROM ubuntu:jammy as builder
 
-ARG VERSION=1442
+ARG VERSION=latest
 
 ENV TERRARIA_VERSION=$VERSION
 
