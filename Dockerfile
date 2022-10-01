@@ -2,27 +2,23 @@ FROM ubuntu:jammy as builder
 
 ARG VERSION=latest
 
-ENV TERRARIA_VERSION=$VERSION
-
-ENV LATEST_VERSION=""
-
-ENV PATH="/scripts:${PATH}"
-
-ENV TERRARIA_DIR=/root/.local/share/Terraria
+ENV TERRARIA_VERSION=$VERSION \
+    LATEST_VERSION="" \
+    PATH="/scripts:${PATH}" \
+    TERRARIA_DIR=/root/.local/share/Terraria
 
 RUN mkdir -p /scripts ${TERRARIA_DIR}
 
 COPY ./.scripts /scripts
 
-RUN chmod +x /scripts/*
+RUN chmod +x /scripts/* && \
+    mv /scripts/init-TerrariaServer.sh ${TERRARIA_DIR}
 
-RUN mv /scripts/init-TerrariaServer.sh ${TERRARIA_DIR}
-
-RUN apt update -y && apt install -y unzip curl
+RUN apt-get update -y && apt-get install -y unzip curl
 
 WORKDIR ${TERRARIA_DIR}
 
-RUN if [ "${TERRARIA_VERSION}" = "latest" ]; then \
+RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
         echo "using latest version." \
     &&  export LATEST_VERSION=$(get-terraria-version.sh) \
     &&  export TERRARIA_VERSION=${LATEST_VERSION}; fi \
@@ -40,45 +36,30 @@ RUN if [ "${TERRARIA_VERSION}" = "latest" ]; then \
 
 FROM ubuntu:jammy
 
-ENV TERRARIA_DIR=/root/.local/share/Terraria
+ENV TERRARIA_DIR=/root/.local/share/Terraria \
+    autocreate=2 \
+    seed='' \
+    worldname=TerrariaWorld \
+    difficulty=0 \
+    maxplayers=16 \
+    port=7777 \
+    password='' \
+    motd="Welcome!" \
+    worldpath=${TERRARIA_DIR}/Worlds \
+    banlist=banlist.txt \
+    secure=1 \
+    language=en/US \
+    upnp=1 \
+    npcstream=1 \
+    priority=1
 
 RUN mkdir -p ${TERRARIA_DIR}/Worlds
-
-ENV autocreate=2
-
-ENV seed=
-
-ENV worldname=TerrariaWorld
-
-ENV difficulty=0
-
-ENV maxplayers=16
-
-ENV port=7777
-
-ENV password=''
-
-ENV motd="Welcome!"
-
-ENV worldpath=${TERRARIA_DIR}/Worlds
-
-ENV banlist=banlist.txt
-
-ENV secure=1
-
-ENV language=en/US
-
-ENV upnp=1
-
-ENV npcstream=1
-
-ENV priority=1
 
 WORKDIR ${TERRARIA_DIR}
 
 COPY --from=builder ${TERRARIA_DIR}/* ./
 
-VOLUME ["/root/.local/share/Terraria/Worlds"]
+VOLUME [`${TERRARIA_DIR}/Worlds`]
 
 ENTRYPOINT [ "./init-TerrariaServer.sh" ]
 
