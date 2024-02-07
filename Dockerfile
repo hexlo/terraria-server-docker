@@ -12,7 +12,7 @@ RUN mkdir -p /scripts ${TERRARIA_DIR}
 COPY ./.scripts /scripts
 
 RUN chmod +x /scripts/* && \
-    mv /scripts/init-TerrariaServer.sh ${TERRARIA_DIR}
+    mv /scripts/init-TerrariaServer.sh ${TERRARIA_DIR}/Worlds
 
 RUN apt-get update -y && apt-get install -y unzip curl
 
