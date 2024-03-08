@@ -2,12 +2,13 @@ pipeline {
   environment {
     userName = "hexlo"
     imageName = "terraria-server-docker"
-    // Set buildVersion to manually change the server version. Leave empty for defaulting to 'latest'
+    // Set buildVersion to manually change the server version. Leaving empty will default to 'latest'
     buildVersion = 'latest'
     tag = "${buildVersion ? buildVersion : 'latest'}"
     gitRepo = "https://github.com/${userName}/${imageName}.git"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
+    arch='amd64'
     
     dockerhubCredentials = 'DOCKERHUB_TOKEN'
     githubCredentials = 'GITHUB_TOKEN'
@@ -45,14 +46,29 @@ pipeline {
         }
       }
     }
-    stage('Building image') {
+    stage('Building amd64 image') {
       steps{
         script {
+          arch='amd64'
+          "Building ${dockerhubRegistry}-${arch}:${tag}"
           // Docker Hub
-          dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} ." )
+          dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
           
           // Github
-          githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} ." )
+          githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
+        }
+      }
+    }
+    stage('Building arm64 image') {
+      steps{
+        script {
+          arch='arm64'
+          echo "Building ${dockerhubRegistry}-${arch}:${tag}"
+          // Docker Hub
+          dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          
+          // Github
+          githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
         }
       }
     }
@@ -60,6 +76,8 @@ pipeline {
       steps{
         script {
           // Docker Hub
+          echo "create manifest"
+          sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
             dockerhubImage.push("${tag}")
             dockerhubImage.push("${versionTag}")
@@ -78,6 +96,8 @@ pipeline {
           // Docker Hub
           sh "docker rmi ${dockerhubRegistry}:${tag}"
           sh "docker rmi ${dockerhubRegistry}:${versionTag}"
+          sh "docker rmi ${dockerhubRegistry}-amd64:${tag}"
+          sh "docker rmi ${dockerhubRegistry}-arm64:${tag}"
 
           // Github
           sh "docker rmi ${githubRegistry}:${tag}"
