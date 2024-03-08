@@ -26,14 +26,14 @@ pipeline {
   }
   stages {
     stage('Cloning Git') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps {
-        environment { HOME = "${env.WORKSPACE}" }
         git branch: 'main', credentialsId: 'GITHUB_TOKEN', url: gitRepo
       }
     }
     stage('Getting Latest Version') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps {
-        environment { HOME = "${env.WORKSPACE}" }
         script {
           echo "tag=${tag}"
           if (tag == 'latest') {
@@ -49,8 +49,8 @@ pipeline {
       }
     }
     stage('Building amd64 image') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps{
-        environment { HOME = "${env.WORKSPACE}" }
         script {
           arch='amd64'
           "Building ${dockerhubRegistry}-${arch}:${tag}"
@@ -63,8 +63,8 @@ pipeline {
       }
     }
     stage('Building arm64 image') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps{
-        environment { HOME = "${env.WORKSPACE}" }
         script {
           arch='arm64'
           echo "Building ${dockerhubRegistry}-${arch}:${tag}"
@@ -77,8 +77,8 @@ pipeline {
       }
     }
     stage('Deploy Image') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps{
-        environment { HOME = "${env.WORKSPACE}" }
         script {
           // Docker Hub
           echo "create manifest"
@@ -96,8 +96,8 @@ pipeline {
       }
     }
     stage('Remove Unused docker image') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps{
-        environment { HOME = "${env.WORKSPACE}" }
         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           // Docker Hub
           sh "docker rmi ${dockerhubRegistry}:${tag}"
