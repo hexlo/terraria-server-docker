@@ -58,6 +58,7 @@ pipeline {
           // Debugging
           echo "Workspace: ${WORKSPACE}"
           sh 'ls -alh'
+          sh 'cat Dockerfile'
           dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
           
           // Github
