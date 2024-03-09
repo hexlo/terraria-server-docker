@@ -7,7 +7,7 @@ ENV TERRARIA_VERSION=$VERSION \
     TERRARIA_DIR=/root/.local/share/Terraria \
     PATH="${TERRARIA_DIR}:${PATH}"
 
-RUN mkdir -p /scripts ${TERRARIA_DIR}
+RUN mkdir -p ${TERRARIA_DIR}
 
 WORKDIR ${TERRARIA_DIR}
 

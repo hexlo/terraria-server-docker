@@ -56,10 +56,6 @@ pipeline {
           arch='amd64'
           "Building ${dockerhubRegistry}-${arch}:${tag}"
           // Docker Hub
-          // Debugging
-          echo "Workspace: ${WORKSPACE}"
-          sh 'ls -alh'
-          sh 'cat Dockerfile'
           dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
           
           // Github
@@ -100,9 +96,27 @@ pipeline {
         }
       }
     }
-    stage('Remove Unused docker image') {
-      environment { HOME = "${env.WORKSPACE}" }
-      steps{
+    // stage('Remove Unused docker image') {
+    //   environment { HOME = "${env.WORKSPACE}" }
+    //   steps{
+    //     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+    //       // Docker Hub
+    //       sh "docker rmi ${dockerhubRegistry}:${tag}"
+    //       sh "docker rmi ${dockerhubRegistry}:${versionTag}"
+    //       sh "docker rmi ${dockerhubRegistry}-amd64:${tag}"
+    //       sh "docker rmi ${dockerhubRegistry}-arm64:${tag}"
+
+    //       // Github
+    //       sh "docker rmi ${githubRegistry}:${tag}"
+    //       sh "docker rmi ${githubRegistry}:${versionTag}"
+    //     }
+
+    //   }
+    // }
+  }
+  post {
+    always {
+        // Cleanup of docker images
         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           // Docker Hub
           sh "docker rmi ${dockerhubRegistry}:${tag}"
@@ -114,11 +128,7 @@ pipeline {
           sh "docker rmi ${githubRegistry}:${tag}"
           sh "docker rmi ${githubRegistry}:${versionTag}"
         }
-
-      }
     }
-  }
-  post {
     failure {
         mail bcc: '', body: "<b>Jenkins Build Report</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} \
         <br>Build URL: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', \
