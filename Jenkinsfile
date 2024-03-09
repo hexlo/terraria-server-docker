@@ -6,9 +6,10 @@ pipeline {
     buildVersion = 'latest'
     tag = "${buildVersion ? buildVersion : 'latest'}"
     gitRepo = "https://github.com/${userName}/${imageName}.git"
+    gitBranch = "arm-64"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
-    arch='amd64'
+    arch=''
     
     dockerhubCredentials = 'DOCKERHUB_TOKEN'
     githubCredentials = 'GITHUB_TOKEN'
@@ -28,7 +29,7 @@ pipeline {
     stage('Cloning Git') {
       environment { HOME = "${env.WORKSPACE}" }
       steps {
-        git branch: 'main', credentialsId: 'GITHUB_TOKEN', url: gitRepo
+        git branch: "${gitBranch}", credentialsId: 'GITHUB_TOKEN', url: "${gitRepo}"
       }
     }
     stage('Getting Latest Version') {
