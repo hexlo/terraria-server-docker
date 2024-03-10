@@ -9,6 +9,7 @@
 ```
 <br>
 <p style="color:#AA78d7; font-family: Consolas; font-weight: bold; font-size: 18px;">
+  ===> Now supports arm64
   ===> tModLoader 1.3 Server available: <a href="https://github.com/hexlo/terraria-tmodloader-server">
 hexlo/terraria-tmodloader-server</a> 
 </p>
