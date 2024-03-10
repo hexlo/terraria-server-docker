@@ -70,10 +70,11 @@ pipeline {
           arch='arm64'
           echo "Building ${dockerhubRegistry}-${arch}:${tag}"
           // Docker Hub
-          dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
-          
+          // dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
+
           // Github
-          githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
         }
       }
     }
