@@ -84,9 +84,9 @@ pipeline {
       steps{
         script {
           // Docker Hub
+          docker.withRegistry( '', "${dockerhubCredentials}" ) {
           echo "create manifest"
           sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
-          docker.withRegistry( '', "${dockerhubCredentials}" ) {
             dockerhubImage.push("${tag}")
             dockerhubImage.push("${versionTag}")
           }
@@ -118,17 +118,20 @@ pipeline {
   }
   post {
     always {
-        // Cleanup of docker images
+        // Cleanup of docker images and volumes
         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           // Docker Hub
-          sh "docker rmi ${dockerhubRegistry}:${tag}"
-          sh "docker rmi ${dockerhubRegistry}:${versionTag}"
-          sh "docker rmi ${dockerhubRegistry}-amd64:${tag}"
-          sh "docker rmi ${dockerhubRegistry}-arm64:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}:${versionTag}"
+          sh "docker rmi -f ${dockerhubRegistry}-amd64:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}-arm64:${tag}"
 
           // Github
-          sh "docker rmi ${githubRegistry}:${tag}"
-          sh "docker rmi ${githubRegistry}:${versionTag}"
+          sh "docker rmi -f ${githubRegistry}:${tag}"
+          sh "docker rmi -f ${githubRegistry}:${versionTag}"
+
+          // Global
+          sh "docker system prune --all --force --volumes"
         }
     }
     failure {
