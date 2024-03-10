@@ -80,7 +80,6 @@ pipeline {
           arch='arm64'
           echo "Building ${dockerhubRegistry}-${arch}:${tag}"
           // Docker Hub
-          // dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
           sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
 
           // Github
@@ -98,37 +97,25 @@ pipeline {
           sh "docker push ${dockerhubRegistry}-amd64:${tag}"
           sh "docker push ${dockerhubRegistry}-arm64:${tag}"
 
-          echo "create manifest"
+          sh "docker push ${dockerhubRegistry}-amd64:${versionTag}"
+          sh "docker push ${dockerhubRegistry}-arm64:${versionTag}"
+
+          echo "creating manifest"
           sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
           sh "docker manifest push ${dockerhubRegistry}:${tag}"
-          // dockerhubImage.push("${tag}")
-          // dockerhubImage.push("${versionTag}")
+
+          sh "docker manifest create --amend ${dockerhubRegistry}:${versionTag} ${dockerhubRegistry}-amd64:${versionTag} ${dockerhubRegistry}-arm64:${versionTag}"
+          sh "docker manifest push ${dockerhubRegistry}:${versionTag}"
           }
           // Github
-          docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
-            githubImage.push("${tag}")
-            githubImage.push("${versionTag}")
-          }
+          // docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
+          //   githubImage.push("${tag}")
+          //   githubImage.push("${versionTag}")
+          // }
         }
       }
     }
-    // stage('Remove Unused docker image') {
-    //   environment { HOME = "${env.WORKSPACE}" }
-    //   steps{
-    //     catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-    //       // Docker Hub
-    //       sh "docker rmi ${dockerhubRegistry}:${tag}"
-    //       sh "docker rmi ${dockerhubRegistry}:${versionTag}"
-    //       sh "docker rmi ${dockerhubRegistry}-amd64:${tag}"
-    //       sh "docker rmi ${dockerhubRegistry}-arm64:${tag}"
 
-    //       // Github
-    //       sh "docker rmi ${githubRegistry}:${tag}"
-    //       sh "docker rmi ${githubRegistry}:${versionTag}"
-    //     }
-
-    //   }
-    // }
   }
   post {
     always {
