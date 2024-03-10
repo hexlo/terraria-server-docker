@@ -6,7 +6,7 @@ pipeline {
     buildVersion = 'latest'
     tag = "${buildVersion ? buildVersion : 'latest'}"
     gitRepo = "https://github.com/${userName}/${imageName}.git"
-    gitBranch = "arm-64"
+    gitBranch = "main"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
     arch=''
@@ -64,12 +64,13 @@ pipeline {
       steps{
         script {
           arch='amd64'
-          "Building ${dockerhubRegistry}-${arch}:${tag}"
+          "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
           dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
-          
+          dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${versionTag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
+
           // Github
-          githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
         }
       }
     }
@@ -78,9 +79,10 @@ pipeline {
       steps{
         script {
           arch='arm64'
-          echo "Building ${dockerhubRegistry}-${arch}:${tag}"
+          echo "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
           sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
+          sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           // Github
           // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
