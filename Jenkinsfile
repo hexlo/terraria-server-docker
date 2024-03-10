@@ -50,9 +50,14 @@ pipeline {
       }
     }
     stage('Creating buildx builder') {
-      catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
-        sh "docker buildx create --append --name multiarch --use"
+      steps {
+        script {
+          catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+            sh "docker buildx create --append --name multiarch --use"
+          }
+        }
       }
+      
     }
     stage('Building amd64 image') {
       environment { HOME = "${env.WORKSPACE}" }
