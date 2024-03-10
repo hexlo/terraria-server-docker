@@ -27,14 +27,6 @@ hexlo/terraria-tmodloader-server</a>
 hexlo/terraria-server-docker:latest
 ```
 
-<p style="color:#0078d7; font-family: Consolas; font-weight: bold;">
-  <ins> Github image: </ins>
-</p>
-
-```
-ghcr.io/hexlo/terraria-server-docker:latest
-```
-
 <br>
 
 ---
