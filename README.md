@@ -12,6 +12,7 @@
 <p style="color:#AA78d7; font-family: Consolas; font-weight: bold; font-size: 24px;">
  ==> Now supports arm64 <br>
  ==> tModLoader 1.3 Server available: <a href="https://github.com/hexlo/terraria-tmodloader-server">
+
 hexlo/terraria-tmodloader-server</a> 
 </p>
 
@@ -19,6 +20,14 @@ hexlo/terraria-tmodloader-server</a>
 
 ### This is a Vanilla server for Terraria PC, packaged as a docker image.  
 <br>
+
+<p style="color:#0078d7; font-family: Consolas; font-weight: bold;">
+  <ins> New Multi-Arch Image (Supports amd64 adn arm64) (Updated Manually): </ins>
+</p>
+
+```
+hexlo/terraria-server-multiarch:latest
+```
 
 <p style="color:#0078d7; font-family: Consolas; font-weight: bold;">
   <ins> Docker Hub image: </ins>
