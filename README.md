@@ -7,14 +7,15 @@
  \ \_\ \_\  \ \_____\   /\_\/\_\  \ \_____\  \ \_____\ 
   \/_/\/_/   \/_____/   \/_/\/_/   \/_____/   \/_____/ 
 ```
-## **Now supports arm64 <br>**
+
 <br>
 <p style="color:#AA78d7; font-family: Consolas; font-weight: bold; font-size: 24px;">
- tModLoader 1.3 Server available: ==> <a href="https://github.com/hexlo/terraria-tmodloader-server">
+ ==> Now supports arm64 <br>
+ ==> tModLoader 1.3 Server available: <a href="https://github.com/hexlo/terraria-tmodloader-server">
 hexlo/terraria-tmodloader-server</a> 
 </p>
 
-# **Terraria Vanilla Server**
+# <ins> **Terraria Vanilla Server** </ins>
 
 ### This is a Vanilla server for Terraria PC, packaged as a docker image.  
 <br>
