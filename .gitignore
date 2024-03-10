@@ -10,3 +10,5 @@ worlds/*
 
 backups/
 build.txt
+
+.DS_Store

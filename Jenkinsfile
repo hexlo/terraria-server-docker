@@ -2,12 +2,14 @@ pipeline {
   environment {
     userName = "hexlo"
     imageName = "terraria-server-docker"
-    // Set buildVersion to manually change the server version. Leave empty for defaulting to 'latest'
+    // Set buildVersion to manually change the server version. Leaving empty will default to 'latest'
     buildVersion = 'latest'
     tag = "${buildVersion ? buildVersion : 'latest'}"
     gitRepo = "https://github.com/${userName}/${imageName}.git"
+    gitBranch = "arm-64"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
+    arch=''
     
     dockerhubCredentials = 'DOCKERHUB_TOKEN'
     githubCredentials = 'GITHUB_TOKEN'
@@ -25,11 +27,13 @@ pipeline {
   }
   stages {
     stage('Cloning Git') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps {
-        git branch: 'main', credentialsId: 'GITHUB_TOKEN', url: gitRepo
+        git branch: "${gitBranch}", credentialsId: 'GITHUB_TOKEN', url: "${gitRepo}"
       }
     }
     stage('Getting Latest Version') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps {
         script {
           echo "tag=${tag}"
@@ -45,53 +49,96 @@ pipeline {
         }
       }
     }
-    stage('Building image') {
+    stage('Creating buildx builder') {
+      steps {
+        script {
+          catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+            sh "docker buildx create --append --name multiarch --use"
+          }
+        }
+      }
+      
+    }
+    stage('Building amd64 image') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps{
         script {
+          arch='amd64'
+          "Building ${dockerhubRegistry}-${arch}:${tag}"
           // Docker Hub
-          dockerhubImage = docker.build( "${dockerhubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} ." )
+          dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
           
           // Github
-          githubImage = docker.build( "${githubRegistry}:${tag}", "--no-cache --build-arg VERSION=${buildVersion} ." )
+          githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
+        }
+      }
+    }
+    stage('Building arm64 image') {
+      environment { HOME = "${env.WORKSPACE}" }
+      steps{
+        script {
+          arch='arm64'
+          echo "Building ${dockerhubRegistry}-${arch}:${tag}"
+          // Docker Hub
+          sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
+
+          // Github
+          // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
         }
       }
     }
     stage('Deploy Image') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps{
         script {
           // Docker Hub
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
-            dockerhubImage.push("${tag}")
-            dockerhubImage.push("${versionTag}")
+          // Push individual images for them to be available to the manifest
+          sh "docker push ${dockerhubRegistry}-amd64:${tag}"
+          sh "docker push ${dockerhubRegistry}-arm64:${tag}"
+
+          sh "docker push ${dockerhubRegistry}-amd64:${versionTag}"
+          sh "docker push ${dockerhubRegistry}-arm64:${versionTag}"
+
+          echo "creating manifest"
+          sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
+          sh "docker manifest push ${dockerhubRegistry}:${tag}"
+
+          sh "docker manifest create --amend ${dockerhubRegistry}:${versionTag} ${dockerhubRegistry}-amd64:${versionTag} ${dockerhubRegistry}-arm64:${versionTag}"
+          sh "docker manifest push ${dockerhubRegistry}:${versionTag}"
           }
           // Github
-          docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
-            githubImage.push("${tag}")
-            githubImage.push("${versionTag}")
-          }
+          // docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
+          //   githubImage.push("${tag}")
+          //   githubImage.push("${versionTag}")
+          // }
         }
       }
     }
-    stage('Remove Unused docker image') {
-      steps{
-        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
-          // Docker Hub
-          sh "docker rmi ${dockerhubRegistry}:${tag}"
-          sh "docker rmi ${dockerhubRegistry}:${versionTag}"
 
-          // Github
-          sh "docker rmi ${githubRegistry}:${tag}"
-          sh "docker rmi ${githubRegistry}:${versionTag}"
-        }
-
-      }
-    }
   }
   post {
+    always {
+        // Cleanup of docker images and volumes
+        catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          // Docker Hub
+          sh "docker rmi -f ${dockerhubRegistry}:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}:${versionTag}"
+          sh "docker rmi -f ${dockerhubRegistry}-amd64:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}-arm64:${tag}"
+
+          // Github
+          sh "docker rmi -f ${githubRegistry}:${tag}"
+          sh "docker rmi -f ${githubRegistry}:${versionTag}"
+
+          // Global
+          sh "docker system prune --all --force --volumes"
+        }
+    }
     failure {
         mail bcc: '', body: "<b>Jenkins Build Report</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} \
         <br>Build URL: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', \
-        subject: "Jenkins Build Failed: ${env.JOB_NAME}", to: "jenkins@mindlab.dev";  
+        subject: "Jenkins Build Failed: ${env.JOB_NAME}", to: "jenkins@runx.io";  
 
     }
   }
