@@ -49,6 +49,11 @@ pipeline {
         }
       }
     }
+    stage('Creating buildx builder') {
+      catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+        sh "docker buildx create --append --name multiarch --use"
+      }
+    }
     stage('Building amd64 image') {
       environment { HOME = "${env.WORKSPACE}" }
       steps{
@@ -71,7 +76,6 @@ pipeline {
           echo "Building ${dockerhubRegistry}-${arch}:${tag}"
           // Docker Hub
           // dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
-          sh "docker buildx create --append --name multiarch --use"
           sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
 
           // Github
@@ -137,7 +141,7 @@ pipeline {
     failure {
         mail bcc: '', body: "<b>Jenkins Build Report</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} \
         <br>Build URL: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', \
-        subject: "Jenkins Build Failed: ${env.JOB_NAME}", to: "jenkins@mindlab.dev";  
+        subject: "Jenkins Build Failed: ${env.JOB_NAME}", to: "jenkins@runx.io";  
 
     }
   }
