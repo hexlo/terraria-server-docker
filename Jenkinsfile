@@ -100,7 +100,7 @@ pipeline {
 
           echo "create manifest"
           sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
-          sh "docker manifest push {dockerhubRegistry}:${tag}"
+          sh "docker manifest push ${dockerhubRegistry}:${tag}"
           // dockerhubImage.push("${tag}")
           // dockerhubImage.push("${versionTag}")
           }
