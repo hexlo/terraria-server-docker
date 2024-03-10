@@ -6,7 +6,7 @@ pipeline {
     buildVersion = 'latest'
     tag = "${buildVersion ? buildVersion : 'latest'}"
     gitRepo = "https://github.com/${userName}/${imageName}.git"
-    gitBranch = "arm-64"
+    gitBranch = "main"
     dockerhubRegistry = "${userName}/${imageName}"
     githubRegistry = "ghcr.io/${userName}/${imageName}"
     arch=''
