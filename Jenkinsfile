@@ -94,10 +94,15 @@ pipeline {
         script {
           // Docker Hub
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
+          // Push individual images for them to be available to the manifest
+          sh "docker push ${dockerhubRegistry}-amd64:${tag}"
+          sh "docker push ${dockerhubRegistry}-arm64:${tag}"
+
           echo "create manifest"
           sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
-            dockerhubImage.push("${tag}")
-            dockerhubImage.push("${versionTag}")
+          sh "docker manifest push {dockerhubRegistry}:${tag}"
+          // dockerhubImage.push("${tag}")
+          // dockerhubImage.push("${versionTag}")
           }
           // Github
           docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
