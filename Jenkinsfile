@@ -71,6 +71,7 @@ pipeline {
           echo "Building ${dockerhubRegistry}-${arch}:${tag}"
           // Docker Hub
           // dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          sh "docker buildx create --name multiarch --use"
           sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
 
           // Github
