@@ -62,7 +62,6 @@ You can rename `docker-compose-example.yml` to `docker-compose.yml` and modify i
 version: '3'
 services:
   terraria-server:
-    # Github mirror: ghcr.io/hexlo/terraria-server-docker:latest
     image: hexlo/terraria-server-docker:latest
     container_name: terraria-server
     restart: unless-stopped
