@@ -5,8 +5,8 @@ terraria-server.zip
 terraria-server/
 docker-compose.yml
 
-worlds/*
-!worlds/.gitkeep
+Worlds/*
+!Worlds/.gitkeep
 
 backups/
 build.txt

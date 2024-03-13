@@ -6,12 +6,14 @@ echo > ${file}
 
 if [[ ! -z "${world}" ]]; then
     echo "world=${world}" >> ${file}
+else
+    echo "world=${worldpath}/${worldname}.wld" >> ${file}
+    echo "autocreate=${autocreate}" >> ${file}
+    echo "seed=${seed}" >> ${file}
+    echo "worldname=${worldname}" >> ${file}
+    echo "difficulty=${difficulty}" >> ${file}
 fi
 
-echo "autocreate=${autocreate}" >> ${file}
-echo "seed=${seed}" >> ${file}
-echo "worldname=${worldname}" >> ${file}
-echo "difficulty=${difficulty}" >> ${file}
 echo "maxplayers=${maxplayers}" >> ${file}
 echo "port=${port}" >> ${file}
 echo "password=${password}" >> ${file}
