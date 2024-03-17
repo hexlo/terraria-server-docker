@@ -81,8 +81,8 @@ pipeline {
           arch='arm64'
           echo "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
-          sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
-          sh "docker buildx build --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --target build-arm64 --progress plain --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
+          sh "docker buildx build --target build-arm64 --progress plain --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           // Github
           // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
@@ -101,6 +101,9 @@ pipeline {
 
           sh "docker push ${dockerhubRegistry}-amd64:${versionTag}"
           sh "docker push ${dockerhubRegistry}-arm64:${versionTag}"
+
+          // Better way using imagetools. Need testing
+          // docker buildx imagetools create --progress plain hexlo/terraria-server-docker-amd64:latest hexlo/terraria-server-docker-arm64 --tag hexlo/terraria-server-docker:latest
 
           echo "creating manifest"
           sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
