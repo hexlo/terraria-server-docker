@@ -68,8 +68,9 @@ ENTRYPOINT [ "./init-TerrariaServer-amd64.sh" ]
 
 FROM mono:latest AS build-arm64
 
-ENV TERRARIA_DIR=/root/.local/share/Terraria \
-    PATH="${TERRARIA_DIR}:${PATH}" \
+ENV TERRARIA_DIR=/root/.local/share/Terraria
+
+ENV PATH="${TERRARIA_DIR}:${PATH}" \
     autocreate=1 \
     seed='' \
     worldname=TerrariaWorld \
