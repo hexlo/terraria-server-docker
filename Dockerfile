@@ -1,10 +1,10 @@
-FROM debian:10 as base
+FROM debian:10-slim as base
 
 ARG VERSION=latest
 
 ENV TERRARIA_VERSION=$VERSION
 ENV LATEST_VERSION=""
-ENV TERRARIA_DIR=/root/.local/share/Terraria
+ENV TERRARIA_DIR=/var/Terraria
 ENV PATH="${TERRARIA_DIR}:${PATH}"
 
 RUN mkdir -p ${TERRARIA_DIR}
@@ -68,7 +68,7 @@ ENTRYPOINT [ "./init-TerrariaServer-amd64.sh" ]
 
 FROM mono:latest AS build-arm64
 
-ENV TERRARIA_DIR=/root/.local/share/Terraria \
+ENV TERRARIA_DIR=/var/Terraria \
     PATH="${TERRARIA_DIR}:${PATH}" \
     autocreate=1 \
     seed='' \
