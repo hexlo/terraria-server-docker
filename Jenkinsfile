@@ -53,7 +53,7 @@ pipeline {
       steps {
         script {
           catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
-            sh "docker buildx create --append --name multiarch --use"
+            sh "docker buildx create --name multiarch --use"
           }
         }
       }
