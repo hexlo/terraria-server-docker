@@ -82,7 +82,8 @@ pipeline {
           arch='arm64'
           echo "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
-          sh "docker buildx create --name multiarch --use"
+          // sh "docker buildx create --name multiarch --use"
+          sh "docker buildx use multiarch"
           sh "docker buildx build --builder multiarch --target build-arm64 --progress plain --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
           sh "docker buildx build --builder multiarch --target build-arm64 --progress plain --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
