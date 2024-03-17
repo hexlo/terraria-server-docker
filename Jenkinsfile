@@ -53,7 +53,7 @@ pipeline {
       environment { HOME = "${env.WORKSPACE}" }
       steps {
         script {
-          catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
+          catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
             sh "docker buildx create --name multiarch --use"
           }
         }
@@ -67,8 +67,11 @@ pipeline {
           arch='amd64'
           "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
-          dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
-          dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${versionTag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          // dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          // dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${versionTag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          sh "docker buildx use multiarch"
+          sh "docker buildx build --builder multiarch --target build-${arch} --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
+          sh "docker buildx build --builder multiarch --target build-${arch} --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           // Github
           // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
@@ -82,10 +85,9 @@ pipeline {
           arch='arm64'
           echo "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
-          // sh "docker buildx create --name multiarch --use"
           sh "docker buildx use multiarch"
-          sh "docker buildx build --builder multiarch --target build-arm64 --progress plain --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
-          sh "docker buildx build --builder multiarch --target build-arm64 --progress plain --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --builder multiarch --target build-${arch} --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
+          sh "docker buildx build --builder multiarch --target build-${arch} --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           // Github
           // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
