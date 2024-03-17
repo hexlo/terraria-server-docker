@@ -2,10 +2,10 @@ FROM debian:10-slim as base
 
 ARG VERSION=latest
 
-ENV TERRARIA_VERSION=$VERSION \
-    LATEST_VERSION="" \
-    TERRARIA_DIR=/root/.local/share/Terraria \
-    PATH="${TERRARIA_DIR}:${PATH}"
+ENV TERRARIA_VERSION=$VERSION
+ENV LATEST_VERSION=""
+ENV TERRARIA_DIR=/root/.local/share/Terraria
+ENV PATH="${TERRARIA_DIR}:${PATH}"
 
 RUN mkdir -p ${TERRARIA_DIR}
 
