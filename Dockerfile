@@ -1,4 +1,4 @@
-FROM debian:10-slim as base
+FROM debian:10 as base
 
 ARG VERSION=latest
 
@@ -34,11 +34,10 @@ RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
     && rm -rf ${TERRARIA_DIR}/Linux \
     && cd ${TERRARIA_DIR}
 
-ENV TERRARIA_DIR=/root/.local/share/Terraria \
-    autocreate=2 \
+ENV autocreate=1 \
     seed='' \
     worldname=TerrariaWorld \
-    difficulty=0 \
+    difficulty=1 \
     maxplayers=16 \
     port=7777 \
     password='' \
@@ -71,10 +70,10 @@ FROM mono:latest AS build-arm64
 
 ENV TERRARIA_DIR=/root/.local/share/Terraria \
     PATH="${TERRARIA_DIR}:${PATH}" \
-    autocreate=2 \
+    autocreate=1 \
     seed='' \
     worldname=TerrariaWorld \
-    difficulty=0 \
+    difficulty=1 \
     maxplayers=16 \
     port=7777 \
     password='' \
