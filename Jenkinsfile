@@ -23,7 +23,7 @@ pipeline {
   }
   agent any
   triggers {
-        cron('H H/2 * * *')
+        cron('H * * * *')
   }
   stages {
     stage('Cloning Git') {
@@ -50,9 +50,10 @@ pipeline {
       }
     }
     stage('Creating buildx builder') {
+      environment { HOME = "${env.WORKSPACE}" }
       steps {
         script {
-          catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
+          catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
             sh "docker buildx create --name multiarch --use"
           }
         }
@@ -81,6 +82,7 @@ pipeline {
           arch='arm64'
           echo "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
+          sh "docker buildx create --name multiarch --use"
           sh "docker buildx build --builder multiarch --target build-arm64 --progress plain --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${tag} --load ."
           sh "docker buildx build --builder multiarch --target build-arm64 --progress plain --platform linux/arm64 -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
