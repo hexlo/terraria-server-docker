@@ -19,15 +19,15 @@ RUN chmod +x \
     init-TerrariaServer-amd64.sh \
     init-TerrariaServer-arm64.sh
 
-RUN apt-get update -y && apt-get install -y unzip curl
+RUN apt-get update -y && apt-get install -y unzip wget
 
 RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
     echo "using latest version." \
-    &&  export LATEST_VERSION=$(get-terraria-version.sh) \
+    &&  export LATEST_VERSION=$(bash get-terraria-version.sh) \
     &&  export TERRARIA_VERSION=${LATEST_VERSION}; fi \
     && echo "TERRARIA_VERSION=${TERRARIA_VERSION}" \
     && echo "${TERRARIA_VERSION}" > ${TERRARIA_DIR}/terraria-version.txt \
-    && curl https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip --output terraria-server.zip \  
+    && wget https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip -O terraria-server.zip \  
     && unzip terraria-server.zip -d ${TERRARIA_DIR} && mv ${TERRARIA_DIR}/*/* ${TERRARIA_DIR} \
     && rm -rf terraria-server.zip ${TERRARIA_DIR}/Mac ${TERRARIA_DIR}/Windows ${TERRARIA_DIR}/${TERRARIA_VERSION} \
     && mv ${TERRARIA_DIR}/Linux/* ${TERRARIA_DIR}/ \
