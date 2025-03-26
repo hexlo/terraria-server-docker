@@ -41,7 +41,12 @@ pipeline {
           if (tag == 'latest') {
             // latestVersion = sh(script: "${WORKSPACE}/.scripts/get-terraria-version.sh", returnStdout: true).trim()
 
-            latestVersion = sh returnStdout: true, script: '".scripts/get-terraria-version.sh"'
+            latestVersion = sh returnStdout: true, script: '"wget -qO- \
+  -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/93.0.4577.63 Safari/537.36" \
+  https://terraria.wiki.gg/wiki/Server#Downloads 2>&1 \
+  | grep -o 'https://terraria.org/api/download/pc-dedicated-server/[^"]*' \
+  | sed 's#.*/terraria-server-##' | sed 's/\.zip//' \
+  | head -n 1"'
             test = sh(script: "echo 'this is a test. 1234' | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout:true).trim()
             echo "latestVersion: ${latestVersion}"
             echo "test: ${test}"
