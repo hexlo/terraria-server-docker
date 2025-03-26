@@ -40,6 +40,7 @@ pipeline {
           echo "tag=${tag}"
           if (tag == 'latest') {
             latestVersion = sh(script: "${WORKSPACE}/.scripts/get-terraria-version.sh", returnStdout: true).trim()
+            echo "latestVersion: $latestVersion"
             versionTag = sh(script: "echo $latestVersion | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout:true).trim()
           }
           else {
