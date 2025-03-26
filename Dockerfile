@@ -1,4 +1,4 @@
-FROM debian:10-slim as base
+FROM debian:10-slim AS base
 
 ARG VERSION=latest
 
