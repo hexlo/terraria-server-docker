@@ -56,7 +56,6 @@ You can rename `docker-compose-example.yml` to `docker-compose.yml` and modify i
 
 ### ***docker-compose.yml example:***
 ```
-version: '3'
 services:
   terraria-server:
     image: hexlo/terraria-server-docker:latest
