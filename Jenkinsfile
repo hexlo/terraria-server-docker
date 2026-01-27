@@ -12,7 +12,7 @@ pipeline {
     arch=''
     
     dockerhubCredentials = 'DOCKERHUB_TOKEN'
-    githubCredentials = '3801c6bb-4368-4484-8c3a-42c0a779fe10'
+    githubCredentials = 'GITHUB_TOKEN'
     jenkins_email = credentials('RUNX_EMAIL')
     
     dockerhubImage = ''
@@ -29,12 +29,26 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
-        git branch: "${gitBranch}", credentialsId: 'GITHUB_TOKEN', url: "${gitRepo}"
+        git branch: "${gitBranch}", credentialsId: "${githubCredentials}", url: "${gitRepo}"
       }
     }
     stage('Getting Latest Version') {
       steps {
         script {
+
+          // installing regclient
+          sh "curl -L https://github.com/regclient/regclient/releases/latest/download/regctl-linux-amd64 >regctl"
+          sh "chmod 755 regctl"
+
+          sh "./regctl version"
+
+          // # login to GHCR with a provided password
+          withCredentials([string(credentialsId: 'f1ed1fe0-50bf-4256-9d08-029f48737802', variable: 'TOKEN')]) {
+               sh """echo ${TOKEN} | ./regctl registry login ghcr.io -u ${userName} --pass-stdin"""     
+          }
+          
+
+          // Getting latest version
           echo "tag=${tag}"
           if (tag == 'latest') {
             latestVersion = sh(script: "${WORKSPACE}/.scripts/get-terraria-version.sh", returnStdout: true).trim()
@@ -59,42 +73,27 @@ pipeline {
       }
       
     }
-    stage('Building amd64 image') {
-      steps{
+
+    stage('Building Images - Docker Hub') {
+      steps {
         script {
           arch='amd64'
-          echo "Building ${dockerhubRegistry}-${arch}"
-          // Docker Hub
+          echo "========== Building ${dockerhubRegistry}-${arch} =========="
+
           sh "docker buildx use multiarch"
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
-          // Github
-          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${tag} --load ."
-          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${versionTag} --load ."
-        }
-      }
-    }
-    stage('Building arm64 image') {
-      steps{
-        script {
           arch='arm64'
-          echo "Building ${dockerhubRegistry}-${arch}"
+          echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
-          // Global
-          sh "docker buildx use multiarch"
-
-          // Docker Hub
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
-
-          // Github
-          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${tag} --load ."
-          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${versionTag} --load ."
         }
       }
     }
-    stage('Deploy Image - Dockerhub') {
+
+    stage('Deploy Images to Dockerhub') {
       steps{
         script {
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
@@ -120,34 +119,14 @@ pipeline {
       }
     }
 
-    stage('Deploy Image - ghcr.io') {
-      steps{
+    stage('Copying Images to ghcr.io') {
+      steps {
         script {
-          docker.withRegistry( 'https://ghcr.io', "${githubCredentials}" ) {
-
-            echo "====================== Deploy Image - ghcr.io ========================================\n\n\n\n\n"
-            // Push individual images for them to be available to the manifest
-            sh "docker push ${githubRegistry}-amd64:${tag}"
-            sh "docker push ${githubRegistry}-arm64:${tag}"
-
-            sh "docker push ${githubRegistry}-amd64:${versionTag}"
-            sh "docker push ${githubRegistry}-arm64:${versionTag}"
-
-            // Better way using imagetools. Need testing
-            // docker buildx imagetools create --progress plain hexlo/terraria-server-docker-amd64:latest hexlo/terraria-server-docker-arm64 --tag hexlo/terraria-server-docker:latest
-
-            echo "creating manifest"
-
-            sh "docker manifest create --amend ${githubRegistry}:${tag} ${githubRegistry}-amd64:${tag} ${githubRegistry}-arm64:${tag}"
-            sh "docker manifest push ${githubRegistry}:${tag}"
-
-            sh "docker manifest create --amend ${githubRegistry}:${versionTag} ${githubRegistry}-amd64:${versionTag} ${githubRegistry}-arm64:${versionTag}"
-            sh "docker manifest push ${githubRegistry}:${versionTag}"
-          }
+          sh "./regctl image copy ${dockerhubRegistry}:${tag} ${githubRegistry}:${tag}"
+          sh "./regctl image copy ${dockerhubRegistry}:${versionTag} ${githubRegistry}:${versionTag}"
         }
       }
     }
-
   }
   post {
     always {
@@ -177,11 +156,11 @@ pipeline {
           sh "docker system prune --all --force --volumes"
         }
     }
-    failure {
-        mail bcc: '', body: "<b>Jenkins Build Report</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} \
-        <br>Build URL: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', \
-        subject: "Jenkins Build Failed: ${env.JOB_NAME}", to: "${jenkins_email}";  
+  //   failure {
+  //       mail bcc: '', body: "<b>Jenkins Build Report</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} \
+  //       <br>Build URL: ${env.BUILD_URL}", cc: '', charset: 'UTF-8', from: '', mimeType: 'text/html', replyTo: '', \
+  //       subject: "Jenkins Build Failed: ${env.JOB_NAME}", to: "${jenkins_email}";  
 
-    }
+  //   }
   }
 }
