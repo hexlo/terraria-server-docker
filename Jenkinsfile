@@ -123,8 +123,7 @@ pipeline {
     stage('Deploy Image - ghcr.io') {
       steps{
         script {
-
-          withCredentials([string(credentialsId: ${githubCredentials}, variable: 'GITHUB_TOKEN')]) {
+          docker.withRegistry( 'https://ghcr.io', "${githubCredentials}" ) {
 
             echo "====================== Deploy Image - ghcr.io ========================================\n\n\n\n\n"
             // Push individual images for them to be available to the manifest
