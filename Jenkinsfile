@@ -69,14 +69,11 @@ pipeline {
           arch='amd64'
           "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
-          // dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
-          // dockerhubImage = docker.build( "${dockerhubRegistry}-${arch}:${versionTag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
           sh "docker buildx use multiarch"
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           // Github
-          // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${tag} --load ."
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${versionTag} --load ."
         }
@@ -88,13 +85,15 @@ pipeline {
         script {
           arch='arm64'
           echo "Building ${dockerhubRegistry}-${arch}"
-          // Docker Hub
+
+          // Global
           sh "docker buildx use multiarch"
+
+          // Docker Hub
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           // Github
-          // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${tag} --load ."
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${versionTag} --load ."
         }
@@ -132,6 +131,8 @@ pipeline {
       steps{
         script {
           docker.withRegistry( '', "${githubCredentials}" ) {
+
+            echo "====================== Deploy Image - ghcr.io ========================================\n\n\n\n\n"
             // Push individual images for them to be available to the manifest
             sh "docker push ${githubRegistry}-amd64:${tag}"
             sh "docker push ${githubRegistry}-arm64:${tag}"
