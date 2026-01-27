@@ -100,33 +100,55 @@ pipeline {
         }
       }
     }
-    stage('Deploy Image') {
+    stage('Deploy Image - Dockerhub') {
       environment { HOME = "${env.WORKSPACE}" }
       steps{
         script {
-          // Docker Hub
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
-          // Push individual images for them to be available to the manifest
-          sh "docker push ${dockerhubRegistry}-amd64:${tag}"
-          sh "docker push ${dockerhubRegistry}-arm64:${tag}"
+            // Push individual images for them to be available to the manifest
+            sh "docker push ${dockerhubRegistry}-amd64:${tag}"
+            sh "docker push ${dockerhubRegistry}-arm64:${tag}"
 
-          sh "docker push ${dockerhubRegistry}-amd64:${versionTag}"
-          sh "docker push ${dockerhubRegistry}-arm64:${versionTag}"
+            sh "docker push ${dockerhubRegistry}-amd64:${versionTag}"
+            sh "docker push ${dockerhubRegistry}-arm64:${versionTag}"
 
-          // Better way using imagetools. Need testing
-          // docker buildx imagetools create --progress plain hexlo/terraria-server-docker-amd64:latest hexlo/terraria-server-docker-arm64 --tag hexlo/terraria-server-docker:latest
+            // Better way using imagetools. Need testing
+            // docker buildx imagetools create --progress plain hexlo/terraria-server-docker-amd64:latest hexlo/terraria-server-docker-arm64 --tag hexlo/terraria-server-docker:latest
 
-          echo "creating manifest"
-          sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
-          sh "docker manifest push ${dockerhubRegistry}:${tag}"
+            echo "creating manifest"
 
-          sh "docker manifest create --amend ${dockerhubRegistry}:${versionTag} ${dockerhubRegistry}-amd64:${versionTag} ${dockerhubRegistry}-arm64:${versionTag}"
-          sh "docker manifest push ${dockerhubRegistry}:${versionTag}"
+            sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
+            sh "docker manifest push ${dockerhubRegistry}:${tag}"
+
+            sh "docker manifest create --amend ${dockerhubRegistry}:${versionTag} ${dockerhubRegistry}-amd64:${versionTag} ${dockerhubRegistry}-arm64:${versionTag}"
+            sh "docker manifest push ${dockerhubRegistry}:${versionTag}"
           }
-          // Github
-          docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
-            githubImage.push("${tag}")
-            githubImage.push("${versionTag}")
+        }
+      }
+    }
+
+    stage('Deploy Image - ghcr.io') {
+      environment { HOME = "${env.WORKSPACE}" }
+      steps{
+        script {
+          docker.withRegistry( '', "${githubCredentials}" ) {
+            // Push individual images for them to be available to the manifest
+            sh "docker push ${githubRegistry}-amd64:${tag}"
+            sh "docker push ${githubRegistry}-arm64:${tag}"
+
+            sh "docker push ${githubRegistry}-amd64:${versionTag}"
+            sh "docker push ${githubRegistry}-arm64:${versionTag}"
+
+            // Better way using imagetools. Need testing
+            // docker buildx imagetools create --progress plain hexlo/terraria-server-docker-amd64:latest hexlo/terraria-server-docker-arm64 --tag hexlo/terraria-server-docker:latest
+
+            echo "creating manifest"
+
+            sh "docker manifest create --amend ${githubRegistry}:${tag} ${githubRegistry}-amd64:${tag} ${githubRegistry}-arm64:${tag}"
+            sh "docker manifest push ${githubRegistry}:${tag}"
+
+            sh "docker manifest create --amend ${githubRegistry}:${versionTag} ${githubRegistry}-amd64:${versionTag} ${githubRegistry}-arm64:${versionTag}"
+            sh "docker manifest push ${githubRegistry}:${versionTag}"
           }
         }
       }
@@ -140,12 +162,22 @@ pipeline {
           // Docker Hub
           sh "docker rmi -f ${dockerhubRegistry}:${tag}"
           sh "docker rmi -f ${dockerhubRegistry}:${versionTag}"
+
           sh "docker rmi -f ${dockerhubRegistry}-amd64:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}-amd64:${versionTag}"
+
           sh "docker rmi -f ${dockerhubRegistry}-arm64:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}-arm64:${versionTag}"
 
           // Github
           sh "docker rmi -f ${githubRegistry}:${tag}"
           sh "docker rmi -f ${githubRegistry}:${versionTag}"
+
+          sh "docker rmi -f ${githubRegistry}-amd64:${tag}"
+          sh "docker rmi -f ${githubRegistry}-amd64:${versionTag}"
+          
+          sh "docker rmi -f ${githubRegistry}-arm64:${tag}"
+          sh "docker rmi -f ${githubRegistry}-arm64:${versionTag}"
 
           // Global
           sh "docker system prune --all --force --volumes"
