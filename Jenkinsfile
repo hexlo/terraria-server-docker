@@ -12,7 +12,7 @@ pipeline {
     arch=''
     
     dockerhubCredentials = 'DOCKERHUB_TOKEN'
-    githubCredentials = 'GITHUB_TOKEN'
+    githubCredentials = '3801c6bb-4368-4484-8c3a-42c0a779fe10'
     jenkins_email = credentials('RUNX_EMAIL')
     
     dockerhubImage = ''
@@ -63,7 +63,7 @@ pipeline {
       steps{
         script {
           arch='amd64'
-          "Building ${dockerhubRegistry}-${arch}"
+          echo "Building ${dockerhubRegistry}-${arch}"
           // Docker Hub
           sh "docker buildx use multiarch"
           sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
@@ -123,7 +123,8 @@ pipeline {
     stage('Deploy Image - ghcr.io') {
       steps{
         script {
-          docker.withRegistry( '', "${githubCredentials}" ) {
+
+          withCredentials([string(credentialsId: ${githubCredentials}, variable: 'GITHUB_TOKEN')]) {
 
             echo "====================== Deploy Image - ghcr.io ========================================\n\n\n\n\n"
             // Push individual images for them to be available to the manifest
