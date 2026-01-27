@@ -28,13 +28,11 @@ pipeline {
   }
   stages {
     stage('Cloning Git') {
-      environment { HOME = "${env.WORKSPACE}" }
       steps {
         git branch: "${gitBranch}", credentialsId: 'GITHUB_TOKEN', url: "${gitRepo}"
       }
     }
     stage('Getting Latest Version') {
-      environment { HOME = "${env.WORKSPACE}" }
       steps {
         script {
           echo "tag=${tag}"
@@ -52,7 +50,6 @@ pipeline {
       }
     }
     stage('Creating buildx builder') {
-      environment { HOME = "${env.WORKSPACE}" }
       steps {
         script {
           catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
@@ -63,7 +60,6 @@ pipeline {
       
     }
     stage('Building amd64 image') {
-      environment { HOME = "${env.WORKSPACE}" }
       steps{
         script {
           arch='amd64'
@@ -80,7 +76,6 @@ pipeline {
       }
     }
     stage('Building arm64 image') {
-      environment { HOME = "${env.WORKSPACE}" }
       steps{
         script {
           arch='arm64'
@@ -100,7 +95,6 @@ pipeline {
       }
     }
     stage('Deploy Image - Dockerhub') {
-      environment { HOME = "${env.WORKSPACE}" }
       steps{
         script {
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
@@ -127,7 +121,6 @@ pipeline {
     }
 
     stage('Deploy Image - ghcr.io') {
-      environment { HOME = "${env.WORKSPACE}" }
       steps{
         script {
           docker.withRegistry( '', "${githubCredentials}" ) {
