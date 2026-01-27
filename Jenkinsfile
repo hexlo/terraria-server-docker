@@ -77,6 +77,8 @@ pipeline {
 
           // Github
           // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-amd64 --platform linux/amd64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${tag} --load ."
+          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${versionTag} --load ."
         }
       }
     }
@@ -93,6 +95,8 @@ pipeline {
 
           // Github
           // githubImage = docker.build( "${githubRegistry}-${arch}:${tag}", "--target build-arm64 --platform linux/arm64 --no-cache --build-arg VERSION=${buildVersion} ." )
+          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${tag} --load ."
+          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${githubRegistry}-${arch}:${versionTag} --load ."
         }
       }
     }
@@ -120,10 +124,10 @@ pipeline {
           sh "docker manifest push ${dockerhubRegistry}:${versionTag}"
           }
           // Github
-          // docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
-          //   githubImage.push("${tag}")
-          //   githubImage.push("${versionTag}")
-          // }
+          docker.withRegistry("https://${githubRegistry}", "${githubCredentials}" ) {
+            githubImage.push("${tag}")
+            githubImage.push("${versionTag}")
+          }
         }
       }
     }
