@@ -139,7 +139,7 @@ If you want the server to start automatically on subsequent runs, you need to pr
 
 | Env variable | Default value | Description | Example |
 | :------------- | :----------: | :----------- | :----------- |
-| `world` | (*empty*) | Path to your world **_inside the container_**. _You need to provide a world for the server to start automatically_ | `world=/root/.local/share/Terraria/Worlds/Worlds/My_World.wld` |
+| `world` | (*empty*) | Path to your world **_inside the container_**. _You need to provide a world for the server to start automatically_ | `world=/root/.local/share/Terraria/Worlds/My_World.wld` |
 | `autocreate` | `2` | Creates a world if none is found in the path specified by -world. World size is specified by: 1(small), 2(medium), and 3(large). | `autocreate=2` |
 | `seed` | (*empty*) | Specifies the world seed when using -autocreate | `seed=someseed123` |
 | `worldname` | (*empty*) | Sets the name of the world when using -autocreate. | `worldname=world1` |
