@@ -2,7 +2,7 @@ pipeline {
   environment {
     userName = "hexlo"
     imageName = "terraria-server-docker"
-    // Set buildVersion to manually change the server version. Leaving empty will default to 'latest'
+    // Set buildVersion to manually change the server version. Leaving empty will default to 'latest'. Use '1234' format.
     buildVersion = ''
     tag = "${buildVersion ? buildVersion : 'latest'}"
     gitRepo = "https://github.com/${userName}/${imageName}.git"
@@ -32,9 +32,13 @@ pipeline {
         git branch: "${gitBranch}", credentialsId: "${githubCredentials}", url: "${gitRepo}"
       }
     }
-    stage('Getting Latest Version') {
+
+    stage('Installing dependencies') {
       steps {
         script {
+          echo "========== Installing dependencies =========="
+          sh "sudo apt install python3"
+          sh "python3 --version"
 
           // installing regclient
           sh "curl -L https://github.com/regclient/regclient/releases/latest/download/regctl-linux-amd64 >regctl"
@@ -46,12 +50,29 @@ pipeline {
           withCredentials([string(credentialsId: 'f1ed1fe0-50bf-4256-9d08-029f48737802', variable: 'TOKEN')]) {
               sh """echo ${TOKEN} | ./regctl registry login ghcr.io -u ${userName} --pass-stdin"""     
           }
-          
 
+        }
+      }
+    }
+
+    stage('get_latest_version Tests') {
+      steps {
+        script {
+          echo "========== Python Tests =========="
+          sh "python3 tests/test_get_next_version.py || exit 1 \
+              echo 'All tests passed!' "
+        }
+      }
+    }
+
+    stage('Getting Latest Version') {
+      steps {
+        script {
+          echo "========== Getting Terraria's Latest Available Version =========="
           // Getting latest version
           echo "tag=${tag}"
           if (tag == 'latest') {
-            latestVersion = sh(script: "${WORKSPACE}/.scripts/get-terraria-version.sh", returnStdout: true).trim()
+            latestVersion = sh(script: "python3 ${WORKSPACE}/scripts/get_latest_version.py 2>/dev/null | tail -n 1", returnStdout: true).trim()
             echo "latestVersion: ${latestVersion}"
             versionTag = sh(script: "echo $latestVersion | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout:true).trim()
           }
@@ -63,6 +84,7 @@ pipeline {
         }
       }
     }
+
     stage('Creating buildx builder') {
       steps {
         script {

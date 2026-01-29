@@ -3,19 +3,22 @@ FROM debian:12-slim AS base
 ARG VERSION=latest
 
 ENV TERRARIA_VERSION=$VERSION
-ENV LATEST_VERSION=""
+ENV LATEST_VERSION="$(python3 scripts/get_latest_version.py 2>/dev/null | tail -n 1)"
 ENV TERRARIA_DIR=/root/.local/share/Terraria
 ENV PATH="${TERRARIA_DIR}:${PATH}"
+
+
+
 
 RUN mkdir -p ${TERRARIA_DIR}
 
 WORKDIR ${TERRARIA_DIR}
 
-COPY ./.scripts/* .
+COPY ./scripts/* .
 
 RUN chmod +x \
     create-server-config.sh \
-    get-terraria-version.sh \
+    get_latest_version.py \
     init-TerrariaServer-amd64.sh \
     init-TerrariaServer-arm64.sh
 
@@ -23,7 +26,6 @@ RUN apt-get update -y && apt-get install -y unzip wget
 
 RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
     echo "using latest version." \
-    &&  export LATEST_VERSION=$(bash get-terraria-version.sh) \
     &&  export TERRARIA_VERSION=${LATEST_VERSION}; fi \
     && echo "TERRARIA_VERSION=${TERRARIA_VERSION}" \
     && echo "${TERRARIA_VERSION}" > ${TERRARIA_DIR}/terraria-version.txt \

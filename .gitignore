@@ -1,3 +1,4 @@
+# Project
 !Dockerfile
 !README.md
 !docker-compose-example.yml
@@ -5,7 +6,6 @@ terraria-server.zip
 terraria-server/
 docker-compose.yml
 Server*
-.scripts/test*
 
 Worlds/*
 !Worlds/.gitkeep
@@ -13,4 +13,18 @@ Worlds/*
 backups/
 build.txt
 
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# OS
 .DS_Store
+
+# LLMs
+.claude/
+
+# IDE
+.vscode/
+.idea/
