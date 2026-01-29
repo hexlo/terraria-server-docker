@@ -18,7 +18,7 @@ RUN chmod +x \
     init-TerrariaServer-amd64.sh \
     init-TerrariaServer-arm64.sh
 
-RUN apt-get update -y && apt-get -qq install python3 unzip wget
+RUN apt-get update -qq && apt-get -qq install python3 unzip wget
 
 RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
     echo "using latest version." \
