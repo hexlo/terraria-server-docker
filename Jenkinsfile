@@ -17,7 +17,6 @@ pipeline {
     manualBuildVersion = ''
 
     buildVersion = "${manualBuildVersion ? manualBuildVersion : 'latest'}"
-    versionTag = ''
   }
   agent any
   triggers {
@@ -69,24 +68,28 @@ pipeline {
           // We want the latest available version
           if (buildVersion == 'latest') {
             def latestVersion = sh(script: "python3 ${WORKSPACE}/scripts/get_latest_version.py | tail -n 1", returnStdout: true).trim()
+
             // If the script fails
             if (latestVersion.isEmpty()) {
               error("Error: Failed to get latest version.")
             // Script worked, we have the latestVersion
             } else {
               echo "latestVersion: ${latestVersion}"
-              env.versionTag = sh(script: "echo ${latestVersion} | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout: true).trim()
-              echo "versionTag: ${env.versionTag}"
+              // Convert "1452" to "1.4.5.2" by adding dots between each character
+              versionTag = latestVersion.toList().join('.')
+              echo "versionTag: ${versionTag}"
             }
           }
           // We are building a specific version specified by 'manualBuildVersion'
           else {
-            env.versionTag = sh(script: "echo ${env.buildVersion} | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout: true).trim()
-            // Fallback if versionTag is empty or null
-            if (!env.versionTag || env.versionTag.isEmpty() || env.versionTag == 'null') {
-              error("Error: versionTag conversion failed")
-            }
-            echo "buildVersion=${buildVersion}, versionTag=${env.versionTag}"
+            // Convert "1452" to "1.4.5.2" by adding dots between each character
+            versionTag = env.buildVersion.toList().join('.')
+            echo "buildVersion=${buildVersion}, versionTag=${versionTag}"
+          }
+
+          // Final validation: ensure versionTag is never null or empty
+          if (!versionTag || versionTag.isEmpty() || versionTag == 'null') {
+            error("Error: versionTag is null or empty. Cannot proceed with build.")
           }
         }
       }
@@ -113,13 +116,13 @@ pipeline {
 
           sh "docker buildx use multiarch"
           sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${env.versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           arch='arm64'
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
           sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${env.versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
         }
       }
     }
@@ -133,16 +136,16 @@ pipeline {
             sh "docker push ${dockerhubRegistry}-amd64:latest"
             sh "docker push ${dockerhubRegistry}-arm64:latest"
 
-            sh "docker push ${dockerhubRegistry}-amd64:${env.versionTag}"
-            sh "docker push ${dockerhubRegistry}-arm64:${env.versionTag}"
+            sh "docker push ${dockerhubRegistry}-amd64:${versionTag}"
+            sh "docker push ${dockerhubRegistry}-arm64:${versionTag}"
 
             echo "creating manifest"
 
             sh "docker manifest create --amend ${dockerhubRegistry}:latest ${dockerhubRegistry}-amd64:latest ${dockerhubRegistry}-arm64:latest"
             sh "docker manifest push ${dockerhubRegistry}:latest"
 
-            sh "docker manifest create --amend ${dockerhubRegistry}:${env.versionTag} ${dockerhubRegistry}-amd64:${env.versionTag} ${dockerhubRegistry}-arm64:${env.versionTag}"
-            sh "docker manifest push ${dockerhubRegistry}:${env.versionTag}"
+            sh "docker manifest create --amend ${dockerhubRegistry}:${versionTag} ${dockerhubRegistry}-amd64:${versionTag} ${dockerhubRegistry}-arm64:${versionTag}"
+            sh "docker manifest push ${dockerhubRegistry}:${versionTag}"
           }
         }
       }
@@ -153,7 +156,7 @@ pipeline {
         script {
           echo "========== ${env.STAGE_NAME} =========="
           sh "./regctl image copy ${dockerhubRegistry}:latest ${githubRegistry}:latest"
-          sh "./regctl image copy ${dockerhubRegistry}:${env.versionTag} ${githubRegistry}:${env.versionTag}"
+          sh "./regctl image copy ${dockerhubRegistry}:${versionTag} ${githubRegistry}:${versionTag}"
         }
       }
     }
@@ -164,13 +167,13 @@ pipeline {
         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           // Docker Hub
           sh "docker rmi -f ${dockerhubRegistry}:latest"
-          sh "docker rmi -f ${dockerhubRegistry}:${env.versionTag}"
+          sh "docker rmi -f ${dockerhubRegistry}:${versionTag}"
 
           sh "docker rmi -f ${dockerhubRegistry}-amd64:latest"
-          sh "docker rmi -f ${dockerhubRegistry}-amd64:${env.versionTag}"
+          sh "docker rmi -f ${dockerhubRegistry}-amd64:${versionTag}"
 
           sh "docker rmi -f ${dockerhubRegistry}-arm64:latest"
-          sh "docker rmi -f ${dockerhubRegistry}-arm64:${env.versionTag}"
+          sh "docker rmi -f ${dockerhubRegistry}-arm64:${versionTag}"
 
           // Global
           sh "docker system prune --all --force --volumes"
@@ -178,7 +181,7 @@ pipeline {
     }
     success {
       echo "======================================================================================="
-      echo "========== Successfully built terraria images for version: ${env.versionTag} =========="
+      echo "========== Successfully built terraria images for version: ${versionTag} =========="
       echo "======================================================================================="
     }
   //   failure {
