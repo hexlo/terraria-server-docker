@@ -3,7 +3,7 @@ pipeline {
     userName = "hexlo"
     imageName = "terraria-server-docker"
     // Set buildVersion to manually change the server version. Leaving empty will default to 'latest'
-    buildVersion = 'latest'
+    buildVersion = ''
     tag = "${buildVersion ? buildVersion : 'latest'}"
     gitRepo = "https://github.com/${userName}/${imageName}.git"
     gitBranch = "main"
@@ -44,7 +44,7 @@ pipeline {
 
           // # login to GHCR with a provided password
           withCredentials([string(credentialsId: 'f1ed1fe0-50bf-4256-9d08-029f48737802', variable: 'TOKEN')]) {
-               sh """echo ${TOKEN} | ./regctl registry login ghcr.io -u ${userName} --pass-stdin"""     
+              sh """echo ${TOKEN} | ./regctl registry login ghcr.io -u ${userName} --pass-stdin"""     
           }
           
 
@@ -81,14 +81,14 @@ pipeline {
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
           sh "docker buildx use multiarch"
-          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
-          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
+          sh "docker buildx build --build-arg VERSION=${buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           arch='arm64'
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
-          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${tag} --load ."
-          sh "docker buildx build --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
+          sh "docker buildx build --build-arg VERSION=${buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
         }
       }
     }
@@ -98,8 +98,8 @@ pipeline {
         script {
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
             // Push individual images for them to be available to the manifest
-            sh "docker push ${dockerhubRegistry}-amd64:${tag}"
-            sh "docker push ${dockerhubRegistry}-arm64:${tag}"
+            sh "docker push ${dockerhubRegistry}-amd64:latest"
+            sh "docker push ${dockerhubRegistry}-arm64:latest"
 
             sh "docker push ${dockerhubRegistry}-amd64:${versionTag}"
             sh "docker push ${dockerhubRegistry}-arm64:${versionTag}"
@@ -109,8 +109,8 @@ pipeline {
 
             echo "creating manifest"
 
-            sh "docker manifest create --amend ${dockerhubRegistry}:${tag} ${dockerhubRegistry}-amd64:${tag} ${dockerhubRegistry}-arm64:${tag}"
-            sh "docker manifest push ${dockerhubRegistry}:${tag}"
+            sh "docker manifest create --amend ${dockerhubRegistry}:latest ${dockerhubRegistry}-amd64:latest ${dockerhubRegistry}-arm64:latest"
+            sh "docker manifest push ${dockerhubRegistry}:latest"
 
             sh "docker manifest create --amend ${dockerhubRegistry}:${versionTag} ${dockerhubRegistry}-amd64:${versionTag} ${dockerhubRegistry}-arm64:${versionTag}"
             sh "docker manifest push ${dockerhubRegistry}:${versionTag}"
@@ -122,7 +122,7 @@ pipeline {
     stage('Copying Images to ghcr.io') {
       steps {
         script {
-          sh "./regctl image copy ${dockerhubRegistry}:${tag} ${githubRegistry}:${tag}"
+          sh "./regctl image copy ${dockerhubRegistry}:latest ${githubRegistry}:latest"
           sh "./regctl image copy ${dockerhubRegistry}:${versionTag} ${githubRegistry}:${versionTag}"
         }
       }
@@ -133,24 +133,14 @@ pipeline {
         // Cleanup of docker images and volumes
         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           // Docker Hub
-          sh "docker rmi -f ${dockerhubRegistry}:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}:latest"
           sh "docker rmi -f ${dockerhubRegistry}:${versionTag}"
 
-          sh "docker rmi -f ${dockerhubRegistry}-amd64:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}-amd64:latest"
           sh "docker rmi -f ${dockerhubRegistry}-amd64:${versionTag}"
 
-          sh "docker rmi -f ${dockerhubRegistry}-arm64:${tag}"
+          sh "docker rmi -f ${dockerhubRegistry}-arm64:latest"
           sh "docker rmi -f ${dockerhubRegistry}-arm64:${versionTag}"
-
-          // Github
-          sh "docker rmi -f ${githubRegistry}:${tag}"
-          sh "docker rmi -f ${githubRegistry}:${versionTag}"
-
-          sh "docker rmi -f ${githubRegistry}-amd64:${tag}"
-          sh "docker rmi -f ${githubRegistry}-amd64:${versionTag}"
-          
-          sh "docker rmi -f ${githubRegistry}-arm64:${tag}"
-          sh "docker rmi -f ${githubRegistry}-arm64:${versionTag}"
 
           // Global
           sh "docker system prune --all --force --volumes"
