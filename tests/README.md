@@ -1,10 +1,10 @@
-# Unit Tests for get-next-version.py
+# Unit Tests for get_latest_version.py
 
 Comprehensive unit tests for the Terraria server version finder script using Python's Standard Library only.
 
 ## Overview
 
-The test suite provides 32 unit tests covering all major functions and edge cases in `get-next-version.py`. Tests use `unittest` and `unittest.mock` to mock HTTP requests and verify behavior without making actual network calls.
+The test suite provides 33 unit tests covering all major functions and edge cases in `get_latest_version.py`. Tests use `unittest` and `unittest.mock` to mock HTTP requests and verify behavior without making actual network calls.
 
 ## Test Structure
 
@@ -44,22 +44,22 @@ Tests web scraping of the Terraria Fandom wiki.
 - `test_http_error_returns_none` - HTTP errors return None (fallback to default)
 - `test_empty_html` - Empty HTML response handling
 
-#### TestFindLatestVersion (8 tests)
-Tests the main version search logic.
+#### TestFindHighestVersion (8 tests)
+Tests the main version search logic using systematic major → minor → hotfix search.
 
-- `test_normal_case_finds_latest` - Normal flow: increments until finding latest
-- `test_base_version_unavailable` - Base version itself is not available
+- `test_finds_higher_major_version` - Finds higher major version (e.g., 1.4.x.x → 1.5.x.x)
+- `test_stays_in_same_major_version` - Major unchanged, searches minor versions
+- `test_only_hotfix_increments` - Only hotfix version increments
+- `test_no_higher_version_available` - No higher version available, returns base
 - `test_fallback_to_default_version` - Falls back to DEFAULT_VERSION='1450' on scraper failure
-- `test_gap_detection_at_1460` - Detects and searches from gap at version jump
-- `test_stops_after_3_consecutive_failures` - Stops searching after 3 consecutive failures
 - `test_output_shows_base_version_source` - Verifies output shows scraped version
 - `test_output_shows_default_version_used` - Verifies output shows fallback to default
-- `test_base_version_unavailable` - Handles unavailable base versions
+- `test_searches_all_major_versions` - Searches through multiple major versions
 
 #### TestEdgeCases (2 tests)
 Tests edge cases and output verification.
 
-- `test_all_versions_available` - Multiple available versions before stopping
+- `test_max_major_version_1998` - Edge case at maximum major version (1.9.9.8)
 - `test_version_string_in_output` - Version numbers and status appear in output
 
 ## Running the Tests
@@ -71,7 +71,7 @@ python3 tests/test_get_next_version.py
 
 Output:
 ```
-Ran 32 tests in 0.006s
+Ran 33 tests in 0.006s
 OK
 ```
 
@@ -85,7 +85,7 @@ Shows each test name and status:
 test_version_to_int_valid (__main__.TestVersionConversion) ... ok
 test_version_to_int_zero (__main__.TestVersionConversion) ... ok
 test_version_to_int_invalid_format (__main__.TestVersionConversion) ... ok
-... (all 32 tests)
+... (all 33 tests)
 ```
 
 ### Run Specific Test Class
@@ -107,14 +107,14 @@ python3 -m unittest tests.test_get_next_version.TestVersionConversion.test_versi
 | Base Version Scraping | 6 | 100% |
 | Main Search Logic | 8 | 100% |
 | Edge Cases | 2 | 100% |
-| **Total** | **32** | **100%** |
+| **Total** | **33** | **100%** |
 
 ### Functions Tested
 - ✅ `version_to_int()` - Version string to integer
 - ✅ `int_to_version()` - Integer to version string
 - ✅ `is_version_available()` - HTTP version availability check
 - ✅ `get_base_version()` - Web scraping for base version
-- ✅ `find_latest_version()` - Main search algorithm
+- ✅ `find_highest_version()` - Systematic major → minor → hotfix search algorithm
 
 ### Error Scenarios Tested
 - ✅ Network failures (URLError, HTTPError)

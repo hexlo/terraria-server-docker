@@ -4,6 +4,9 @@ Find the latest available Terraria dedicated server version.
 
 Scrapes the Terraria Fandom wiki to get a base version, then increments
 to find the actual latest version available for download.
+
+Assumes that version numbers always start with 1, have 4 numbers, each number is between 0-9 (no 2-digit minor version for example)
+and is in the format: 1.M.m.h where { M: major, m: minor, h: hotfix }
 """
 
 import sys
@@ -12,6 +15,7 @@ import urllib.error
 import re
 
 DEFAULT_VERSION = '1450'
+MAX_CONSECUTIVE_FAILURES = 1
 
 
 def get_base_version():
@@ -87,9 +91,18 @@ def is_version_available(version):
         return False
 
 
-def find_latest_version():
-    """Find the latest available Terraria version."""
-    # get_base_version() returns either a version string or None
+def find_highest_version():
+    """Find the highest available Terraria version.
+
+    Systematically searches for the highest version by:
+    1. Finding the highest major version
+    2. Finding the highest minor version within that major
+    3. Finding the highest hotfix version within that minor
+
+    Returns:
+        String of highest available version found
+    """
+
     base_version = get_base_version()
     if base_version is None:
         # If scraping failed, use the default version
@@ -98,64 +111,100 @@ def find_latest_version():
     else:
         print(f"Base version from web scraper: {base_version}")
 
-    # At this point, base_version is guaranteed to be a valid string
-    current_version_int = version_to_int(base_version)
+    base_int = version_to_int(base_version)
+    base_str = str(base_int).zfill(4)  # Ensure 4 digits
 
-    last_available = base_version
-    current_version_int += 1
+    # Parse base version components (assume format: 1Mmh where M=major, m=minor, h=hotfix)
+    if len(base_str) < 4:
+        print(f"Error: Invalid version format '{base_version}'", file=sys.stderr)
+        return base_version
 
-    # Increment and test versions
-    max_consecutive_failures = 3  # Stop after 3 consecutive failures
-    consecutive_failures = 0
+    major = int(base_str[1])
+    minor = int(base_str[2])
+    hotfix = int(base_str[3])
 
-    while consecutive_failures < max_consecutive_failures:
-        current_version = int_to_version(current_version_int)
+    print(f"Starting search from base version {base_version} (1.{major}.{minor}.{hotfix})")
 
-        print(f"Testing version {current_version}...", end=" ", flush=True)
+    # Step 1: Find highest major version
+    print("\n=== Finding highest major version ===")
+    highest_major = major
+    test_major = major + 1
 
-        if is_version_available(current_version):
+    while test_major <= 9:  # Major version can only be 0-9
+        # Test version with next major, minor=0, hotfix=0
+        test_version = int(f"1{test_major}00")
+        print(f"Testing major version 1.{test_major}.0.0 ({test_version})...", end=" ", flush=True)
+
+        if is_version_available(str(test_version)):
             print("✓ Available")
-            last_available = current_version
-            consecutive_failures = 0
+            highest_major = test_major
+            test_major += 1
         else:
             print("✗ Not available")
-            consecutive_failures += 1
+            break
 
-        current_version_int += 1
+    print(f"Highest major version: 1.{highest_major}.x.x")
 
-    # Test some larger jumps to ensure no gaps
-    print("\nTesting larger version jumps to ensure no gaps...")
-    test_jumps = [1460, 1470, 1500]
-    for jump_version in test_jumps:
-        if jump_version > version_to_int(last_available):
-            print(f"Testing version {jump_version}...", end=" ", flush=True)
-            if is_version_available(int_to_version(jump_version)):
-                print("✓ Available (gap detected, incrementing from here)")
-                # If we find a newer version, restart the search from here
-                current_version_int = jump_version + 1
-                last_available = int_to_version(jump_version)
-                consecutive_failures = 0
+    # Step 2: Find highest minor version within the highest major
+    print("\n=== Finding highest minor version ===")
 
-                while consecutive_failures < max_consecutive_failures:
-                    current_version = int_to_version(current_version_int)
-                    print(f"Testing version {current_version}...", end=" ", flush=True)
+    # major version hasnt changed. We start at the minor version already found + 1
+    if highest_major == major:
+        highest_minor = minor
+        test_minor = minor + 1
 
-                    if is_version_available(current_version):
-                        print("✓ Available")
-                        last_available = current_version
-                        consecutive_failures = 0
-                    else:
-                        print("✗ Not available")
-                        consecutive_failures += 1
+    # major version is higher than the version found. We start the minor at 0 and iterate
+    else:
+        highest_minor = 0
+        test_minor = 0
 
-                    current_version_int += 1
-            else:
-                print("✗ Not available")
+    while test_minor <= 9:  # Minor version can only be 0-9
+        # Test version with highest major, test minor, hotfix=0
+        test_version = int(f"1{highest_major}{test_minor}0")
+        print(f"Testing minor version 1.{highest_major}.{test_minor}.0 ({test_version})...", end=" ", flush=True)
 
-    print(f"\nLatest available version: {last_available}")
-    return last_available
+        if is_version_available(str(test_version)):
+            print("✓ Available")
+            highest_minor = test_minor
+            test_minor += 1
+        else:
+            print("✗ Not available")
+            break
+
+    print(f"Highest minor version: 1.{highest_major}.{highest_minor}.x")
+
+    # Step 3: Find highest hotfix version within the highest major.minor
+    print("\n=== Finding highest hotfix version ===")
+
+    # minor version did not change. We start at the minor version already found + 1
+    if highest_minor == minor:
+        highest_hotfix = hotfix
+        test_hotfix = hotfix + 1
+
+    # major version is higher than the version found. We start the minor at 0 and iterate
+    else:
+        highest_hotfix = 0
+        test_hotfix = 0
+
+    while test_hotfix <= 9:  # Hotfix version can only be 0-9
+        # Test version with highest major, highest minor, test hotfix
+        test_version = int(f"1{highest_major}{highest_minor}{test_hotfix}")
+        print(f"Testing hotfix version 1.{highest_major}.{highest_minor}.{test_hotfix} ({test_version})...", end=" ", flush=True)
+
+        if is_version_available(str(test_version)):
+            print("✓ Available")
+            highest_hotfix = test_hotfix
+            test_hotfix += 1
+        else:
+            print("✗ Not available")
+            break
+
+    highest_version = str(int(f"1{highest_major}{highest_minor}{highest_hotfix}"))
+    print(f"\nHighest available version found: {highest_version} (1.{highest_major}.{highest_minor}.{highest_hotfix})")
+
+    return highest_version
 
 
 if __name__ == "__main__":
-    latest = find_latest_version()
+    latest = find_highest_version()
     print(latest)

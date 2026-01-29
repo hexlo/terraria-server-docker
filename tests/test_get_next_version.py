@@ -238,46 +238,94 @@ class TestGetBaseVersion(unittest.TestCase):
         self.assertIsNone(result)
 
 
-class TestFindLatestVersion(unittest.TestCase):
-    """Test find_latest_version function (main logic)."""
-
-    def setUp(self):
-        """Set up patches for this test class."""
-        pass
+class TestFindHighestVersion(unittest.TestCase):
+    """Test find_highest_version function (main logic)."""
 
     @patch.object(get_next_version, 'get_base_version')
     @patch.object(get_next_version, 'is_version_available')
-    def test_normal_case_finds_latest(self, mock_available, mock_base):
-        """Test normal case: finds latest version by incrementing."""
-        mock_base.return_value = '1450'
-        # Simulate: 1451 available, 1452 available, 1453+ not available
-        # Also need to provide values for the larger jumps (1460, 1470, 1500)
-        mock_available.side_effect = [True, True, False, False, False, False, False, False]
-
-        # Capture stdout
-        captured_output = io.StringIO()
-        sys.stdout = captured_output
-
-        result = get_next_version.find_latest_version()
-
-        sys.stdout = sys.__stdout__
-        self.assertEqual(result, '1452')
-
-    @patch.object(get_next_version, 'get_base_version')
-    @patch.object(get_next_version, 'is_version_available')
-    def test_base_version_unavailable(self, mock_available, mock_base):
-        """Test when base version itself is not available."""
-        mock_base.return_value = '1450'
-        # Simulate: base version not available, so search from there
-        mock_available.side_effect = [False, False, False, False, False, False]
+    def test_finds_higher_major_version(self, mock_available, mock_base):
+        """Test finding a higher major version (e.g., 1.4.x.x -> 1.5.x.x)."""
+        mock_base.return_value = '1452'  # 1.4.5.2
+        # Test major versions: 1.5.0.0 (1500) available, 1.6.0.0 (1600) not available
+        # Then test minor versions within 1.5.x.x: stops on first unavailable
+        # Then test hotfix versions within highest minor: stops on first unavailable
+        mock_available.side_effect = [
+            True, False,  # Major: 1500 available, 1600 not (breaks)
+            True, True, True, False,  # Minor: 1500, 1510, 1520 available, 1530 not (breaks)
+            True, True, True, False   # Hotfix: 1520, 1521, 1522 available, 1523 not (breaks)
+        ]
 
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
-        result = get_next_version.find_latest_version()
+        result = get_next_version.find_highest_version()
 
         sys.stdout = sys.__stdout__
-        self.assertEqual(result, '1450')
+        self.assertEqual(result, '1522')  # 1.5.2.2
+
+    @patch.object(get_next_version, 'get_base_version')
+    @patch.object(get_next_version, 'is_version_available')
+    def test_stays_in_same_major_version(self, mock_available, mock_base):
+        """Test when major version hasn't changed, searches minor versions."""
+        mock_base.return_value = '1452'  # 1.4.5.2
+        # Test major versions: 1.5.0.0 (1500) not available
+        # Since major didn't change, start testing minor from 1.4.6.0
+        # Then test hotfix within highest minor found
+        mock_available.side_effect = [
+            False,  # Major: 1500 not available
+            True, False,  # Minor: 1.4.6.0 available, 1.4.7.0 not
+            True, True, False, False, False, False, False, False, False, False  # Hotfix: 1.4.6.0-9 (0,1 available)
+        ]
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        result = get_next_version.find_highest_version()
+
+        sys.stdout = sys.__stdout__
+        self.assertEqual(result, '1461')  # 1.4.6.1
+
+    @patch.object(get_next_version, 'get_base_version')
+    @patch.object(get_next_version, 'is_version_available')
+    def test_only_hotfix_increments(self, mock_available, mock_base):
+        """Test when only hotfix version increments."""
+        mock_base.return_value = '1452'  # 1.4.5.2
+        # Major 1.5.0.0 not available
+        # Minor 1.4.6.0 not available
+        # Only hotfix increments: 1.4.5.3, 1.4.5.4 available
+        mock_available.side_effect = [
+            False,  # Major: 1500 not available
+            False,  # Minor: 1460 not available
+            True, True, True, False, False, False, False, False, False, False  # Hotfix: start from 1453 (3,4,5 available)
+        ]
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        result = get_next_version.find_highest_version()
+
+        sys.stdout = sys.__stdout__
+        self.assertEqual(result, '1455')  # 1.4.5.5
+
+    @patch.object(get_next_version, 'get_base_version')
+    @patch.object(get_next_version, 'is_version_available')
+    def test_no_higher_version_available(self, mock_available, mock_base):
+        """Test when no higher version is available."""
+        mock_base.return_value = '1452'  # 1.4.5.2
+        # All higher versions are not available
+        mock_available.side_effect = [
+            False,  # Major: 1500 not available
+            False,  # Minor: 1460 not available
+            False, False, False, False, False, False, False  # Hotfix: all not available
+        ]
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        result = get_next_version.find_highest_version()
+
+        sys.stdout = sys.__stdout__
+        self.assertEqual(result, '1452')  # Stays at base version
 
     @patch.object(get_next_version, 'get_base_version')
     @patch.object(get_next_version, 'is_version_available')
@@ -285,98 +333,75 @@ class TestFindLatestVersion(unittest.TestCase):
         """Test fallback to DEFAULT_VERSION when scraper fails."""
         mock_base.return_value = None
         # When base version is None, should use DEFAULT_VERSION ('1450')
-        # Then find next available versions
-        mock_available.side_effect = [True, True, False, False, False, False, False, False]
-
-        captured_output = io.StringIO()
-        sys.stdout = captured_output
-
-        result = get_next_version.find_latest_version()
-
-        sys.stdout = sys.__stdout__
-        self.assertEqual(result, '1452')
-
-    @patch.object(get_next_version, 'get_base_version')
-    @patch.object(get_next_version, 'is_version_available')
-    def test_gap_detection_at_1460(self, mock_available, mock_base):
-        """Test gap detection: finds unavailable, then 1460 is available."""
-        mock_base.return_value = '1450'
-        # 1451, 1452 available, then 1453-1455 not available
-        # Then jump to 1460, which IS available, continues searching
-        # Then 1470, 1500 jumps (not available since we already found newer versions)
+        # Then search for higher versions
         mock_available.side_effect = [
-            True, True,           # 1451, 1452 available
-            False, False, False,  # 1453-1455 not available
-            True,                 # 1460 available (gap detected, restart search)
-            True, True,           # 1461, 1462 available
-            False, False, False,  # 1463-1465 not available
-            False, False          # 1470, 1500 not available (or skipped)
+            True, False,  # Major: 1500 available, 1600 not
+            True, False, False, False, False, False, False, False, False, False,  # Minor: 1500 available, rest not
+            True, False, False, False, False, False, False, False, False, False   # Hotfix: 1500 available, rest not
         ]
 
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
-        result = get_next_version.find_latest_version()
+        result = get_next_version.find_highest_version()
 
         sys.stdout = sys.__stdout__
-        self.assertEqual(result, '1462')
-
-    @patch.object(get_next_version, 'get_base_version')
-    @patch.object(get_next_version, 'is_version_available')
-    def test_stops_after_3_consecutive_failures(self, mock_available, mock_base):
-        """Test that search stops after 3 consecutive version failures."""
-        mock_base.return_value = '1450'
-        # 1451 available, then 3+ failures should stop
-        # Also need to provide values for the larger jumps (1460, 1470, 1500)
-        mock_available.side_effect = [True, False, False, False, False, False, False]
-
-        captured_output = io.StringIO()
-        sys.stdout = captured_output
-
-        result = get_next_version.find_latest_version()
-
-        sys.stdout = sys.__stdout__
-        # Should stop after 3 failures, so last_available stays at 1451
-        self.assertEqual(result, '1451')
-        # is_version_available is called:
-        # - 1 for 1451 (available)
-        # - 3 for 1452-1454 (failures to stop loop)
-        # - 3 for larger jumps 1460, 1470, 1500
-        # = 7 total calls
-        self.assertEqual(mock_available.call_count, 7)
+        self.assertEqual(result, '1500')  # 1.5.0.0
 
     @patch.object(get_next_version, 'get_base_version')
     @patch.object(get_next_version, 'is_version_available')
     def test_output_shows_base_version_source(self, mock_available, mock_base):
-        """Test that output indicates whether version came from scraper or default."""
-        mock_base.return_value = '1450'
-        mock_available.side_effect = [False, False, False, False, False, False]
+        """Test that output indicates version came from scraper."""
+        mock_base.return_value = '1452'
+        mock_available.side_effect = [False] * 20  # All not available
 
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
-        get_next_version.find_latest_version()
+        get_next_version.find_highest_version()
 
         output = captured_output.getvalue()
         sys.stdout = sys.__stdout__
-        self.assertIn('Base version from web scraper: 1450', output)
+        self.assertIn('Base version from web scraper: 1452', output)
 
     @patch.object(get_next_version, 'get_base_version')
     @patch.object(get_next_version, 'is_version_available')
     def test_output_shows_default_version_used(self, mock_available, mock_base):
         """Test that output shows when default version is used."""
         mock_base.return_value = None
-        mock_available.side_effect = [False, False, False, False, False, False]
+        mock_available.side_effect = [False] * 20
 
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
-        get_next_version.find_latest_version()
+        get_next_version.find_highest_version()
 
         output = captured_output.getvalue()
         sys.stdout = sys.__stdout__
         self.assertIn('could not find anything', output)
         self.assertIn(get_next_version.DEFAULT_VERSION, output)
+
+    @patch.object(get_next_version, 'get_base_version')
+    @patch.object(get_next_version, 'is_version_available')
+    def test_searches_all_major_versions(self, mock_available, mock_base):
+        """Test that it searches through multiple major versions."""
+        mock_base.return_value = '1452'  # 1.4.5.2
+        # Major: 1.5, 1.6, 1.7 all available, 1.8 not (breaks)
+        # Minor: within 1.7, 0-3 available, 4 not (breaks)
+        # Hotfix: within 1.7.3, 0-5 available, 6 not (breaks)
+        mock_available.side_effect = [
+            True, True, True, False,  # Major: 1500, 1600, 1700 available, 1800 not (breaks)
+            True, True, True, True, False,  # Minor: 1700, 1710, 1720, 1730 available, 1740 not (breaks)
+            True, True, True, True, True, True, False  # Hotfix: 1730-1735 available, 1736 not (breaks)
+        ]
+
+        captured_output = io.StringIO()
+        sys.stdout = captured_output
+
+        result = get_next_version.find_highest_version()
+
+        sys.stdout = sys.__stdout__
+        self.assertEqual(result, '1735')  # 1.7.3.5
 
 
 class TestEdgeCases(unittest.TestCase):
@@ -384,37 +409,42 @@ class TestEdgeCases(unittest.TestCase):
 
     @patch.object(get_next_version, 'get_base_version')
     @patch.object(get_next_version, 'is_version_available')
-    def test_all_versions_available(self, mock_available, mock_base):
-        """Test when many versions are available (should stop after max consecutive failures = 0)."""
-        mock_base.return_value = '1450'
-        # All versions available, but we stop when we find 3 consecutive failures
-        # Also need to provide values for the larger jumps (1460, 1470, 1500)
-        mock_available.side_effect = [True, True, True, True, True, False, False, False, False, False, False]
+    def test_max_major_version_1998(self, mock_available, mock_base):
+        """Test behavior at maximum major version 1.9.9.8."""
+        mock_base.return_value = '1998'  # 1.9.9.8
+        # Major search: test_major would be 10, but loop condition is <= 9, so doesn't execute
+        # Minor search: test_minor would be 10, but loop condition is <= 9, so doesn't execute
+        # Hotfix search: test_hotfix starts at 9
+        mock_available.side_effect = [
+            # No calls for major or minor (loops don't execute)
+            True, False  # Hotfix: 1999 available, then break on next check
+        ]
 
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
-        result = get_next_version.find_latest_version()
+        result = get_next_version.find_highest_version()
 
         sys.stdout = sys.__stdout__
-        self.assertEqual(result, '1455')
+        self.assertEqual(result, '1999')  # 1.9.9.9
 
     @patch.object(get_next_version, 'get_base_version')
     @patch.object(get_next_version, 'is_version_available')
     def test_version_string_in_output(self, mock_available, mock_base):
         """Test that version numbers are printed during search."""
-        mock_base.return_value = '1450'
-        mock_available.side_effect = [True, False, False, False, False, False, False]
+        mock_base.return_value = '1452'
+        mock_available.side_effect = [False] * 20
 
         captured_output = io.StringIO()
         sys.stdout = captured_output
 
-        get_next_version.find_latest_version()
+        get_next_version.find_highest_version()
 
         output = captured_output.getvalue()
         sys.stdout = sys.__stdout__
-        self.assertIn('1451', output)
-        self.assertIn('Available', output)
+        self.assertIn('Finding highest major version', output)
+        self.assertIn('Finding highest minor version', output)
+        self.assertIn('Finding highest hotfix version', output)
 
 
 if __name__ == '__main__':
