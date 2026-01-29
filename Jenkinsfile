@@ -107,14 +107,14 @@ pipeline {
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
           sh "docker buildx use multiarch"
-          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
+          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           arch='arm64'
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
-          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
+          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
         }
       }
     }
