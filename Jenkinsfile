@@ -54,10 +54,10 @@ pipeline {
       }
     }
 
-    stage('get_latest_version Tests') {
+    stage('Unit Tests') {
       steps {
         script {
-          echo "========== Running Unit Tests =========="
+          echo "========== ${env.STAGE_NAME} =========="
           sh "python3 tests/test_get_next_version.py -v"
         }
       }
@@ -66,7 +66,7 @@ pipeline {
     stage('Getting Latest Version') {
       steps {
         script {
-          echo "========== Getting Terraria's Latest Available Version =========="
+          echo "========== ${env.STAGE_NAME} =========="
           echo "tag=${tag}"
           if (tag == 'latest') {
             def latestVersion = sh(script: "python3 ${WORKSPACE}/scripts/get_latest_version.py | tail -n 1", returnStdout: true).trim()
@@ -90,7 +90,7 @@ pipeline {
     stage('Creating buildx builder') {
       steps {
         script {
-          echo "========== Creating buildx builder =========="
+          echo "========== ${env.STAGE_NAME} =========="
 
           catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
             sh "docker buildx create --name multiarch --use"
@@ -108,13 +108,13 @@ pipeline {
 
           sh "docker buildx use multiarch"
           sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${env.versionTag} --load ."
 
           arch='arm64'
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
           sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${env.versionTag} --load ."
         }
       }
     }
@@ -122,7 +122,7 @@ pipeline {
     stage('Deploy Images to Dockerhub') {
       steps{
         script {
-          echo "========== Deploy Images to Dockerhub =========="
+          echo "========== ${env.STAGE_NAME} =========="
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
             // Push individual images for them to be available to the manifest
             sh "docker push ${dockerhubRegistry}-amd64:latest"
@@ -173,6 +173,11 @@ pipeline {
           // Global
           sh "docker system prune --all --force --volumes"
         }
+    }
+    success {
+      echo "======================================================================================="
+      echo "========== Successfully built terraria images for version: ${env.versionTag} =========="
+      echo "======================================================================================="
     }
   //   failure {
   //       mail bcc: '', body: "<b>Jenkins Build Report</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} \

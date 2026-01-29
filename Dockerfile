@@ -18,15 +18,15 @@ RUN chmod +x \
     init-TerrariaServer-amd64.sh \
     init-TerrariaServer-arm64.sh
 
-RUN apt-get update -y && apt-get install -y python3 unzip wget
+RUN apt-get update -y && apt-get -qq install python3 unzip wget
 
 RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
     echo "using latest version." \
     &&  export TERRARIA_VERSION=$(python3 get_latest_version.py 2>/dev/null | tail -n 1); fi \
     && echo "TERRARIA_VERSION=${TERRARIA_VERSION}" \
     && echo "${TERRARIA_VERSION}" > ${TERRARIA_DIR}/terraria-version.txt \
-    && wget https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip -O terraria-server.zip \
-    && unzip terraria-server.zip -d ${TERRARIA_DIR} && mv ${TERRARIA_DIR}/*/* ${TERRARIA_DIR} \
+    && wget -q https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip -O terraria-server.zip \
+    && unzip -qq terraria-server.zip -d ${TERRARIA_DIR} && mv ${TERRARIA_DIR}/*/* ${TERRARIA_DIR} \
     && rm -rf terraria-server.zip ${TERRARIA_DIR}/Mac ${TERRARIA_DIR}/Windows ${TERRARIA_DIR}/${TERRARIA_VERSION} \
     && mv ${TERRARIA_DIR}/Linux/* ${TERRARIA_DIR}/ \
     && rm -rf ${TERRARIA_DIR}/Linux \
