@@ -3,12 +3,8 @@ FROM debian:12-slim AS base
 ARG VERSION=latest
 
 ENV TERRARIA_VERSION=$VERSION
-ENV LATEST_VERSION="$(python3 scripts/get_latest_version.py 2>/dev/null | tail -n 1)"
 ENV TERRARIA_DIR=/root/.local/share/Terraria
 ENV PATH="${TERRARIA_DIR}:${PATH}"
-
-
-
 
 RUN mkdir -p ${TERRARIA_DIR}
 
@@ -26,10 +22,10 @@ RUN apt-get update -y && apt-get install -y unzip wget
 
 RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
     echo "using latest version." \
-    &&  export TERRARIA_VERSION=${LATEST_VERSION}; fi \
+    &&  export TERRARIA_VERSION=$(python3 get_latest_version.py 2>/dev/null | tail -n 1); fi \
     && echo "TERRARIA_VERSION=${TERRARIA_VERSION}" \
     && echo "${TERRARIA_VERSION}" > ${TERRARIA_DIR}/terraria-version.txt \
-    && wget https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip -O terraria-server.zip \  
+    && wget https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip -O terraria-server.zip \
     && unzip terraria-server.zip -d ${TERRARIA_DIR} && mv ${TERRARIA_DIR}/*/* ${TERRARIA_DIR} \
     && rm -rf terraria-server.zip ${TERRARIA_DIR}/Mac ${TERRARIA_DIR}/Windows ${TERRARIA_DIR}/${TERRARIA_VERSION} \
     && mv ${TERRARIA_DIR}/Linux/* ${TERRARIA_DIR}/ \

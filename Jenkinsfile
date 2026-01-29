@@ -1,26 +1,26 @@
 pipeline {
   environment {
-    userName = "hexlo"
-    imageName = "terraria-server-docker"
+    def userName = "hexlo"
+    def imageName = "terraria-server-docker"
     // Set buildVersion to manually change the server version. Leaving empty will default to 'latest'. Use '1234' format.
-    buildVersion = ''
-    tag = "${buildVersion ? buildVersion : 'latest'}"
-    gitRepo = "https://github.com/${userName}/${imageName}.git"
-    gitBranch = "main"
-    dockerhubRegistry = "${userName}/${imageName}"
-    githubRegistry = "ghcr.io/${userName}/${imageName}"
-    arch=''
+    def buildVersion = ''
+    def tag = "${buildVersion ? buildVersion : 'latest'}"
+    def gitRepo = "https://github.com/${userName}/${imageName}.git"
+    def gitBranch = "main"
+    def dockerhubRegistry = "${userName}/${imageName}"
+    def githubRegistry = "ghcr.io/${userName}/${imageName}"
+    def arch=''
     
-    dockerhubCredentials = 'DOCKERHUB_TOKEN'
-    githubCredentials = 'GITHUB_TOKEN'
-    jenkins_email = credentials('RUNX_EMAIL')
+    def dockerhubCredentials = 'DOCKERHUB_TOKEN'
+    def githubCredentials = 'GITHUB_TOKEN'
+    def jenkins_email = credentials('RUNX_EMAIL')
     
-    dockerhubImage = ''
-    dockerhubImageLatest = ''
-    githubImage = ''
+    def dockerhubImage = ''
+    def dockerhubImageLatest = ''
+    def githubImage = ''
     
-    serverVersion = ''
-    versionTag = ''
+    def serverVersion = ''
+    def versionTag = ''
   }
   agent any
   triggers {
@@ -36,8 +36,7 @@ pipeline {
     stage('Installing dependencies') {
       steps {
         script {
-          echo "========== Installing dependencies =========="
-          sh "sudo apt install python3"
+          echo "========== ${env.STAGE_NAME} =========="
           sh "python3 --version"
 
           // installing regclient
@@ -58,9 +57,8 @@ pipeline {
     stage('get_latest_version Tests') {
       steps {
         script {
-          echo "========== Python Tests =========="
-          sh "python3 tests/test_get_next_version.py || exit 1 \
-              echo 'All tests passed!' "
+          echo "========== Running Unit Tests =========="
+          sh "python3 tests/test_get_next_version.py -v"
         }
       }
     }
@@ -69,18 +67,22 @@ pipeline {
       steps {
         script {
           echo "========== Getting Terraria's Latest Available Version =========="
-          // Getting latest version
           echo "tag=${tag}"
           if (tag == 'latest') {
-            latestVersion = sh(script: "python3 ${WORKSPACE}/scripts/get_latest_version.py 2>/dev/null | tail -n 1", returnStdout: true).trim()
-            echo "latestVersion: ${latestVersion}"
-            versionTag = sh(script: "echo $latestVersion | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout:true).trim()
+            def latestVersion = sh(script: "python3 ${WORKSPACE}/scripts/get_latest_version.py | tail -n 1", returnStdout: true).trim()
+            if (latestVersion.isEmpty()) {
+              echo "Warning: Failed to get latest version, using default 'latest' tag"
+              env.versionTag = 'latest'
+            } else {
+              echo "latestVersion: ${latestVersion}"
+              env.versionTag = sh(script: "echo ${latestVersion} | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout: true).trim()
+              echo "versionTag: ${env.versionTag}"
+            }
           }
           else {
-            versionTag = sh(script: "echo $buildVersion | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout:true).trim()
+            env.versionTag = sh(script: "echo ${env.buildVersion} | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout: true).trim()
+            echo "buildVersion=${env.buildVersion}, versionTag=${env.versionTag}"
           }
-          echo "versionTag=${versionTag}"
-          echo "buildVersion=${buildVersion}"
         }
       }
     }
@@ -88,6 +90,8 @@ pipeline {
     stage('Creating buildx builder') {
       steps {
         script {
+          echo "========== Creating buildx builder =========="
+
           catchError(buildResult: 'SUCCESS', stageResult: 'SUCCESS') {
             sh "docker buildx create --name multiarch --use"
           }
@@ -103,14 +107,14 @@ pipeline {
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
           sh "docker buildx use multiarch"
-          sh "docker buildx build --build-arg VERSION=${buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
 
           arch='arm64'
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
-          sh "docker buildx build --build-arg VERSION=${buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${versionTag} --load ."
         }
       }
     }
@@ -118,13 +122,14 @@ pipeline {
     stage('Deploy Images to Dockerhub') {
       steps{
         script {
+          echo "========== Deploy Images to Dockerhub =========="
           docker.withRegistry( '', "${dockerhubCredentials}" ) {
             // Push individual images for them to be available to the manifest
             sh "docker push ${dockerhubRegistry}-amd64:latest"
             sh "docker push ${dockerhubRegistry}-arm64:latest"
 
-            sh "docker push ${dockerhubRegistry}-amd64:${versionTag}"
-            sh "docker push ${dockerhubRegistry}-arm64:${versionTag}"
+            sh "docker push ${dockerhubRegistry}-amd64:${env.versionTag}"
+            sh "docker push ${dockerhubRegistry}-arm64:${env.versionTag}"
 
             // Better way using imagetools. Need testing
             // docker buildx imagetools create --progress plain hexlo/terraria-server-docker-amd64:latest hexlo/terraria-server-docker-arm64 --tag hexlo/terraria-server-docker:latest
@@ -134,8 +139,8 @@ pipeline {
             sh "docker manifest create --amend ${dockerhubRegistry}:latest ${dockerhubRegistry}-amd64:latest ${dockerhubRegistry}-arm64:latest"
             sh "docker manifest push ${dockerhubRegistry}:latest"
 
-            sh "docker manifest create --amend ${dockerhubRegistry}:${versionTag} ${dockerhubRegistry}-amd64:${versionTag} ${dockerhubRegistry}-arm64:${versionTag}"
-            sh "docker manifest push ${dockerhubRegistry}:${versionTag}"
+            sh "docker manifest create --amend ${dockerhubRegistry}:${env.versionTag} ${dockerhubRegistry}-amd64:${env.versionTag} ${dockerhubRegistry}-arm64:${env.versionTag}"
+            sh "docker manifest push ${dockerhubRegistry}:${env.versionTag}"
           }
         }
       }
@@ -144,8 +149,9 @@ pipeline {
     stage('Copying Images to ghcr.io') {
       steps {
         script {
+          echo "========== ${env.STAGE_NAME} =========="
           sh "./regctl image copy ${dockerhubRegistry}:latest ${githubRegistry}:latest"
-          sh "./regctl image copy ${dockerhubRegistry}:${versionTag} ${githubRegistry}:${versionTag}"
+          sh "./regctl image copy ${dockerhubRegistry}:${env.versionTag} ${githubRegistry}:${env.versionTag}"
         }
       }
     }
@@ -156,13 +162,13 @@ pipeline {
         catchError(buildResult: 'SUCCESS', stageResult: 'UNSTABLE') {
           // Docker Hub
           sh "docker rmi -f ${dockerhubRegistry}:latest"
-          sh "docker rmi -f ${dockerhubRegistry}:${versionTag}"
+          sh "docker rmi -f ${dockerhubRegistry}:${env.versionTag}"
 
           sh "docker rmi -f ${dockerhubRegistry}-amd64:latest"
-          sh "docker rmi -f ${dockerhubRegistry}-amd64:${versionTag}"
+          sh "docker rmi -f ${dockerhubRegistry}-amd64:${env.versionTag}"
 
           sh "docker rmi -f ${dockerhubRegistry}-arm64:latest"
-          sh "docker rmi -f ${dockerhubRegistry}-arm64:${versionTag}"
+          sh "docker rmi -f ${dockerhubRegistry}-arm64:${env.versionTag}"
 
           // Global
           sh "docker system prune --all --force --volumes"
