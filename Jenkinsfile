@@ -1,26 +1,23 @@
 pipeline {
   environment {
-    def userName = "hexlo"
-    def imageName = "terraria-server-docker"
+    userName = "hexlo"
+    imageName = "terraria-server-docker"
+
+    gitRepo = "https://github.com/${userName}/${imageName}.git"
+    gitBranch = "main"
+    dockerhubRegistry = "${userName}/${imageName}"
+    githubRegistry = "ghcr.io/${userName}/${imageName}"
+    arch=''
+
+    dockerhubCredentials = 'DOCKERHUB_TOKEN'
+    githubCredentials = 'GITHUB_TOKEN'
+    jenkins_email = credentials('RUNX_EMAIL')
+
     // Set buildVersion to manually change the server version. Leaving empty will default to 'latest'. Use '1234' format.
-    def buildVersion = ''
-    def tag = "${buildVersion ? buildVersion : 'latest'}"
-    def gitRepo = "https://github.com/${userName}/${imageName}.git"
-    def gitBranch = "main"
-    def dockerhubRegistry = "${userName}/${imageName}"
-    def githubRegistry = "ghcr.io/${userName}/${imageName}"
-    def arch=''
-    
-    def dockerhubCredentials = 'DOCKERHUB_TOKEN'
-    def githubCredentials = 'GITHUB_TOKEN'
-    def jenkins_email = credentials('RUNX_EMAIL')
-    
-    def dockerhubImage = ''
-    def dockerhubImageLatest = ''
-    def githubImage = ''
-    
-    def serverVersion = ''
-    def versionTag = ''
+    manualBuildVersion = ''
+
+    buildVersion = "${manualBuildVersion ? manualBuildVersion : 'latest'}"
+    versionTag = ''
   }
   agent any
   triggers {
@@ -67,21 +64,29 @@ pipeline {
       steps {
         script {
           echo "========== ${env.STAGE_NAME} =========="
-          echo "tag=${tag}"
-          if (tag == 'latest') {
+          echo "buildVersion=${buildVersion}"
+
+          // We want the latest available version
+          if (buildVersion == 'latest') {
             def latestVersion = sh(script: "python3 ${WORKSPACE}/scripts/get_latest_version.py | tail -n 1", returnStdout: true).trim()
+            // If the script fails
             if (latestVersion.isEmpty()) {
-              echo "Warning: Failed to get latest version, using default 'latest' tag"
-              env.versionTag = 'latest'
+              error("Error: Failed to get latest version.")
+            // Script worked, we have the latestVersion
             } else {
               echo "latestVersion: ${latestVersion}"
               env.versionTag = sh(script: "echo ${latestVersion} | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout: true).trim()
               echo "versionTag: ${env.versionTag}"
             }
           }
+          // We are building a specific version specified by 'manualBuildVersion'
           else {
             env.versionTag = sh(script: "echo ${env.buildVersion} | sed 's/[0-9]/&./g;s/\\.\$//'", returnStdout: true).trim()
-            echo "buildVersion=${env.buildVersion}, versionTag=${env.versionTag}"
+            // Fallback if versionTag is empty or null
+            if (!env.versionTag || env.versionTag.isEmpty() || env.versionTag == 'null') {
+              error("Error: versionTag conversion failed")
+            }
+            echo "buildVersion=${buildVersion}, versionTag=${env.versionTag}"
           }
         }
       }
@@ -107,14 +112,14 @@ pipeline {
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
           sh "docker buildx use multiarch"
-          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${env.versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${env.versionTag} --load ."
 
           arch='arm64'
           echo "========== Building ${dockerhubRegistry}-${arch} =========="
 
-          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
-          sh "docker buildx build --build-arg VERSION=${env.tag} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${env.versionTag} --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:latest --load ."
+          sh "docker buildx build --build-arg VERSION=${env.buildVersion} --builder multiarch --target build-${arch} --no-cache --progress plain --platform linux/${arch} -t ${dockerhubRegistry}-${arch}:${env.versionTag} --load ."
         }
       }
     }
@@ -130,9 +135,6 @@ pipeline {
 
             sh "docker push ${dockerhubRegistry}-amd64:${env.versionTag}"
             sh "docker push ${dockerhubRegistry}-arm64:${env.versionTag}"
-
-            // Better way using imagetools. Need testing
-            // docker buildx imagetools create --progress plain hexlo/terraria-server-docker-amd64:latest hexlo/terraria-server-docker-arm64 --tag hexlo/terraria-server-docker:latest
 
             echo "creating manifest"
 
