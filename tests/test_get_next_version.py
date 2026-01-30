@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unit tests for get-next-version.py using Python Standard Library only.
+Unit tests for get_highest_version.py.
 """
 
 import unittest
