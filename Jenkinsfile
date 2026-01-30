@@ -23,6 +23,7 @@ pipeline {
         cron('H * * * *')
   }
   stages {
+    // Clean workspace to remove old files from previous builds
     stage('Cloning Git') {
       steps {
         cleanWs()
