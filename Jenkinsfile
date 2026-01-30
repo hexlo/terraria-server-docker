@@ -109,10 +109,14 @@ pipeline {
           ) == 0
 
           if (imageExists) {
+            echo "========================================================================================"
             echo "✓ Image ${dockerhubRegistry}:${versionTag} already exists, skipping build and deployment"
+            echo "========================================================================================"
             env.SKIP_BUILD = 'true'
           } else {
+            echo "================================================================================"
             echo "✗ Image ${dockerhubRegistry}:${versionTag} does not exist, proceeding with build"
+            echo "================================================================================"
             env.SKIP_BUILD = 'false'
           }
         }
