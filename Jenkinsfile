@@ -97,7 +97,32 @@ pipeline {
       }
     }
 
+    stage('Check if Image Exists') {
+      steps {
+        script {
+          echo "========== ${env.STAGE_NAME} =========="
+
+          // Check if the manifest already exists on Docker Hub
+          def imageExists = sh(
+            script: "./regctl image manifest ${dockerhubRegistry}:${versionTag} 2>/dev/null",
+            returnStatus: true
+          ) == 0
+
+          if (imageExists) {
+            echo "✓ Image ${dockerhubRegistry}:${versionTag} already exists, skipping build and deployment"
+            env.SKIP_BUILD = 'true'
+          } else {
+            echo "✗ Image ${dockerhubRegistry}:${versionTag} does not exist, proceeding with build"
+            env.SKIP_BUILD = 'false'
+          }
+        }
+      }
+    }
+
     stage('Creating buildx builder') {
+      when {
+        expression { env.SKIP_BUILD == 'false' }
+      }
       steps {
         script {
           echo "========== ${env.STAGE_NAME} =========="
@@ -111,6 +136,9 @@ pipeline {
     }
 
     stage('Building Images - Docker Hub') {
+      when {
+        expression { env.SKIP_BUILD == 'false' }
+      }
       steps {
         script {
           arch='amd64'
@@ -130,6 +158,9 @@ pipeline {
     }
 
     stage('Deploy Images to Dockerhub') {
+      when {
+        expression { env.SKIP_BUILD == 'false' }
+      }
       steps{
         script {
           echo "========== ${env.STAGE_NAME} =========="
@@ -154,6 +185,9 @@ pipeline {
     }
 
     stage('Copying Images to ghcr.io') {
+      when {
+        expression { env.SKIP_BUILD == 'false' }
+      }
       steps {
         script {
           echo "========== ${env.STAGE_NAME} =========="
@@ -182,9 +216,9 @@ pipeline {
         }
     }
     success {
-      echo "======================================================================================="
-      echo "========== Successfully built terraria images for version: ${versionTag} =========="
-      echo "======================================================================================="
+      echo "=================================================================================================="
+      echo "========== Terraria images version ${versionTag} are available on Dockerhub and ghcr.io =========="
+      echo "=================================================================================================="
     }
   //   failure {
   //       mail bcc: '', body: "<b>Jenkins Build Report</b><br>Project: ${env.JOB_NAME} <br>Build Number: ${env.BUILD_NUMBER} \
