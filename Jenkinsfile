@@ -25,6 +25,7 @@ pipeline {
   stages {
     stage('Cloning Git') {
       steps {
+        cleanWs()
         git branch: "${gitBranch}", credentialsId: "${githubCredentials}", url: "${gitRepo}"
       }
     }
