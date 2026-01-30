@@ -148,7 +148,7 @@ def find_highest_version():
     # Step 2: Find highest minor version within the highest major
     print("\n=== Finding highest minor version ===")
 
-    # major version hasnt changed. We start at the minor version already found + 1
+    # major version hasnt changed. We start at the minor version we have + 1
     if highest_major == major:
         highest_minor = minor
         test_minor = minor + 1
@@ -176,12 +176,12 @@ def find_highest_version():
     # Step 3: Find highest hotfix version within the highest major.minor
     print("\n=== Finding highest hotfix version ===")
 
-    # minor version did not change. We start at the minor version already found + 1
+    # minor version did not change. We start at the hotfix version we have + 1
     if highest_minor == minor:
         highest_hotfix = hotfix
         test_hotfix = hotfix + 1
 
-    # major version is higher than the version found. We start the minor at 0 and iterate
+    # minor version is higher than the version found. We start the hotfix at 0 and iterate
     else:
         highest_hotfix = 0
         test_hotfix = 0
