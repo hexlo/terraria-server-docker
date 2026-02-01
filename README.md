@@ -109,7 +109,19 @@ You need to set certain variables in the `environment:` part of the docker-compo
       - difficulty=1
 ...
 ```
-*Note: the description and possible values of these variables are described in a table below*
+
+The `world` variable is used to load a world automatically when you start the container. If that world doesn't exists, it will be created using the following variables. You can provide them, or the defaults will be used. 
+```
+      - autocreate=2
+      - difficulty=1
+      - seed='SomeSeed'
+```
+ 
+
+ *Note: the description and possible values of these variables are described in a table below*
+
+### **Important!**
+The variable `world` will always take precedence over the variable `worldname`.
 
 <ins> 2. Manually create a world: </ins>
 
