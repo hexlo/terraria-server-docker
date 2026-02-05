@@ -4,6 +4,21 @@ file=server-config.conf
 touch ${file}
 echo > ${file}
 
+# If world is set, normalize the path to avoid repetition and ensure correct location
+if [[ ! -z "${world}" ]]; then
+    if [[ ! -z "${worldpath}" ]]; then
+        world="${worldpath}/$(basename "${world}")"
+    else
+        world="/root/.local/share/Terraria/Worlds/$(basename "${world}")"
+    fi
+fi
+
+# If worldname is not set, derive it from world (basename without extension)
+if [[ -z "${worldname}" && ! -z "${world}" ]]; then
+    worldname=$(basename "${world}")
+    worldname=${worldname%.*}
+fi
+
 # user has set the world variable and the world exists. Loads world
 if [[ ! -z "${world}" && -f "${world}" ]]; then
     echo "${file}: Loading world: ${world}"
@@ -13,7 +28,7 @@ if [[ ! -z "${world}" && -f "${world}" ]]; then
 elif [[ ! -z "${world}" && ! -f "${world}" ]]; then
     echo "${file}: World ${world} doesn't exists. Creating it using:"
 
-    echo "worldname: $(basename "${world}")"
+    echo "worldname: ${worldname}"
     echo "autocreate: ${autocreate}"
     echo "seed: ${seed}"
     echo "difficulty: ${difficulty}"
@@ -21,7 +36,7 @@ elif [[ ! -z "${world}" && ! -f "${world}" ]]; then
     echo "world=${world}" >> ${file}
     echo "autocreate=${autocreate}" >> ${file}
     echo "seed=${seed}" >> ${file}
-    echo "worldname=$(basename "${world}")" >> ${file}
+    echo "worldname=${worldname}" >> ${file}
     echo "difficulty=${difficulty}" >> ${file}
 
 # user has not set the world variable.
