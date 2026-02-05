@@ -14,23 +14,18 @@ COPY ./scripts/* .
 
 RUN chmod +x \
     create-server-config.sh \
-    get_latest_version.py \
     init-TerrariaServer-amd64.sh \
-    init-TerrariaServer-arm64.sh
+    init-TerrariaServer-arm64.sh \
+    download_server.py \
+    prune_unused_files.py \
+    get_latest_filename.py \
+    get_latest_version.py
+    
+RUN apt-get update -qq && apt-get -qq install python3
 
-RUN apt-get update -qq && apt-get -qq install python3 unzip wget
+RUN python3 download_server.py ${TERRARIA_VERSION}
 
-RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
-    echo "using latest version." \
-    &&  export TERRARIA_VERSION=$(python3 get_latest_version.py 2>/dev/null | tail -n 1); fi \
-    && echo "TERRARIA_VERSION=${TERRARIA_VERSION}" \
-    && echo "${TERRARIA_VERSION}" > ${TERRARIA_DIR}/terraria-version.txt \
-    && wget -q https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip -O terraria-server.zip \
-    && unzip -qq terraria-server.zip -d ${TERRARIA_DIR} && mv ${TERRARIA_DIR}/*/* ${TERRARIA_DIR} \
-    && rm -rf terraria-server.zip ${TERRARIA_DIR}/Mac ${TERRARIA_DIR}/Windows ${TERRARIA_DIR}/${TERRARIA_VERSION} \
-    && mv ${TERRARIA_DIR}/Linux/* ${TERRARIA_DIR}/ \
-    && rm -rf ${TERRARIA_DIR}/Linux \
-    && cd ${TERRARIA_DIR}
+RUN python3 prune_unused_files.py
 
 ENV autocreate=1 \
     seed='' \
@@ -47,10 +42,6 @@ ENV autocreate=1 \
     upnp=1 \
     npcstream=1 \
     priority=1
-
-RUN mkdir -p ${TERRARIA_DIR}
-
-WORKDIR ${TERRARIA_DIR}
 
 RUN mkdir -p ${TERRARIA_DIR}/Worlds
 
