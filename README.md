@@ -166,7 +166,7 @@ If you want the server to start automatically on subsequent runs, you need to pr
 | `port` | `7777` | Port used internally by the terraria server. _You should not change this._ | `port=8123` |
 | `password` | (*empty*)  | Set a password for the server | `password=serverpassword` |
 | `motd` | (*empty*) | Set the server motto of the day text. | `motd="Welcome to my private server! :)"` |
-| `worldpath` | `/root/.local/share/Terraria/Worlds/Worlds` | Sets the directory where world files will be stored. Don't change this unless you know what you are doing. | `worldpath=/some/other/dir` |
+| `worldpath` | `/root/.local/share/Terraria/Worlds` | Sets the directory where world files will be stored. Don't change this unless you know what you are doing. | `worldpath=/some/other/dir` |
 | `banlist` | `banlist.txt` | The location of the banlist. Defaults to "banlist.txt" in the working directory. | `banlist=/configs/banlist.txt` -> this would imply that you mount your banlist.txt file in the container's path `/configs/banlist.txt` |
 | `secure` | `1` | Option to prevent cheats. (1: no cheats or 0: cheats allowed) | `secure=0` |
 | `language` | `en/US` | Sets the server language from its language code. Available codes:  `en/US = English` `de/DE = German` `it/IT = Italian` `fr/FR = French` `es/ES = Spanish` `ru/RU = Russian` `zh/Hans = Chinese` `pt/BR = Portuguese` `pl/PL = Polish` | `language=fr/FR` |
