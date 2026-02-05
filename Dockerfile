@@ -29,7 +29,6 @@ RUN python3 prune_unused_files.py
 
 ENV autocreate=1 \
     seed='' \
-    worldname=TerrariaWorld \
     difficulty=1 \
     maxplayers=16 \
     port=7777 \
@@ -62,7 +61,6 @@ ENV TERRARIA_DIR=/root/.local/share/Terraria
 ENV PATH="${TERRARIA_DIR}:${PATH}" \
     autocreate=1 \
     seed='' \
-    worldname=TerrariaWorld \
     difficulty=1 \
     maxplayers=16 \
     port=7777 \

@@ -24,6 +24,14 @@
 hexlo/terraria-server-docker:latest
 ```
 
+<p style="color:#0078d7; font-family: Consolas; font-weight: bold;">
+  <ins> Github image: </ins>
+</p>
+
+```
+ghcr.io/hexlo/terraria-server-docker:latest
+```
+
 <br>
 
 ---
@@ -68,9 +76,8 @@ services:
     volumes:
       - ./Worlds:/root/.local/share/Terraria/Worlds
     environment:
-      - world=/root/.local/share/Terraria/Worlds/world1.wld
+      - world=world1.wld
       - autocreate=2
-      - worldname=world1
       - difficulty=1
       - maxplayers=8
       - port=7777
@@ -78,7 +85,7 @@ services:
       - motd="Welcome to hexlo's server! :)"
 ```
 - Launch the container. If you are using a command line interface (cli):  
-`docker-compose up -d`
+`docker compose up -d`
 
 <br>
 
@@ -103,9 +110,8 @@ You need to set certain variables in the `environment:` part of the docker-compo
 ```
 ...
     environment:
-      - world=/root/.local/share/Terraria/Worlds/world1.wld
+      - world=world1.wld
       - autocreate=2
-      - worldname=world1
       - difficulty=1
 ...
 ```
@@ -121,11 +127,12 @@ The `world` variable is used to load a world automatically when you start the co
  *Note: the description and possible values of these variables are described in a table below*
 
 ### **Important!**
-The variable `world` will always take precedence over the variable `worldname`.
+
+The variable `worldname` variable has been deprecated. The world name is now derived from the world file name`world`. You can still use `worldname` in the creation of a world, but the `world` variable will always take precedence.
 
 <ins> 2. Manually create a world: </ins>
 
-You can create a new world or select different world served by a container by attaching to it.  
+You can create a new world or select different world served by a container by attaching to it if you prefer.  
 `docker attach <container-name>`
 - press enter
 - Go through the options
@@ -151,16 +158,15 @@ If you want the server to start automatically on subsequent runs, you need to pr
 
 | Env variable | Default value | Description | Example |
 | :------------- | :----------: | :----------- | :----------- |
-| `world` | (*empty*) | Path to your world **_inside the container_**. _You need to provide a world for the server to start automatically_ | `world=/root/.local/share/Terraria/Worlds/My_World.wld` |
+| `world` | (*empty*) | Name of the world file. _You need to provide a world for the server to start automatically_ | `world=world1.wld` |
 | `autocreate` | `2` | Creates a world if none is found in the path specified by -world. World size is specified by: 1(small), 2(medium), and 3(large). | `autocreate=2` |
 | `seed` | (*empty*) | Specifies the world seed when using -autocreate | `seed=someseed123` |
-| `worldname` | (*empty*) | Sets the name of the world when using -autocreate. | `worldname=world1` |
 | `difficulty` | `0` | Sets world difficulty when using `autocreate`. Options: 0(normal), 1(expert), 2(master), 3(journey) | `difficulty=1` |
 | `maxplayers` | `16` | The maximum number of players allowed |  `maxplayers=8` |
 | `port` | `7777` | Port used internally by the terraria server. _You should not change this._ | `port=8123` |
 | `password` | (*empty*)  | Set a password for the server | `password=serverpassword` |
 | `motd` | (*empty*) | Set the server motto of the day text. | `motd="Welcome to my private server! :)"` |
-| `worldpath` | `/root/.local/share/Terraria/Worlds/Worlds/Worlds` | Sets the directory where world files will be stored | `worldpath=/some/other/dir` |
+| `worldpath` | `/root/.local/share/Terraria/Worlds` | Sets the directory where world files will be stored. Don't change this unless you know what you are doing. | `worldpath=/some/other/dir` |
 | `banlist` | `banlist.txt` | The location of the banlist. Defaults to "banlist.txt" in the working directory. | `banlist=/configs/banlist.txt` -> this would imply that you mount your banlist.txt file in the container's path `/configs/banlist.txt` |
 | `secure` | `1` | Option to prevent cheats. (1: no cheats or 0: cheats allowed) | `secure=0` |
 | `language` | `en/US` | Sets the server language from its language code. Available codes:  `en/US = English` `de/DE = German` `it/IT = Italian` `fr/FR = French` `es/ES = Spanish` `ru/RU = Russian` `zh/Hans = Chinese` `pt/BR = Portuguese` `pl/PL = Polish` | `language=fr/FR` |
@@ -172,7 +178,7 @@ If you want the server to start automatically on subsequent runs, you need to pr
 
 ### <ins> **Important!** </ins>
 
-If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually. If you create a new world, it will be saved in the path defined by the environment variable `worldpath`.
+If the `world` variable is left empty or not included, the server will need to be initialized manually after the container is spun up. You will need to attach to the container and select/create a world and set the players number, port and password manually. If you create a new world, it will be saved in the path defined by the environment variable `worldpath` (defaults to `/root/.local/share/Terraria/Worlds`).
 
  1. `docker attach <container name>`
  2. press _*enter*_

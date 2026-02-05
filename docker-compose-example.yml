@@ -12,9 +12,9 @@ services:
         source: ./Worlds
         target: /root/.local/share/Terraria/Worlds
     environment:
-      # - world=/root/.local/share/Terraria/Worlds/newworld.wld
+      - world=/root/.local/share/Terraria/Worlds/world1.wld
       - autocreate=2
       - difficulty=2
-      - worldname=newworld
+      - worldname=world1
       - password=hello
       - motd="Welcome to my server! :)"
