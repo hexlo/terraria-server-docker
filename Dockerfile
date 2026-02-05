@@ -25,7 +25,7 @@ RUN if [ "${TERRARIA_VERSION:-latest}" = "latest" ]; then \
     &&  export TERRARIA_VERSION=$(python3 get_latest_version.py 2>/dev/null | tail -n 1); fi \
     && echo "TERRARIA_VERSION=${TERRARIA_VERSION}" \
     && echo "${TERRARIA_VERSION}" > ${TERRARIA_DIR}/terraria-version.txt \
-    && wget -q https://terraria.org/api/download/pc-dedicated-server/terraria-server-${TERRARIA_VERSION}.zip -O terraria-server.zip \
+    && wget -q https://terraria.org/api/download/pc-dedicated-server -O terraria-server.zip \
     && unzip -qq terraria-server.zip -d ${TERRARIA_DIR} && mv ${TERRARIA_DIR}/*/* ${TERRARIA_DIR} \
     && rm -rf terraria-server.zip ${TERRARIA_DIR}/Mac ${TERRARIA_DIR}/Windows ${TERRARIA_DIR}/${TERRARIA_VERSION} \
     && mv ${TERRARIA_DIR}/Linux/* ${TERRARIA_DIR}/ \
