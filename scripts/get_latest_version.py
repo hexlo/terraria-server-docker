@@ -15,8 +15,6 @@ import urllib.error
 import re
 
 DEFAULT_VERSION = '1450'
-MAX_CONSECUTIVE_FAILURES = 1
-
 
 def get_base_version():
     """Get the base Terraria version by scraping the Terraria Fandom wiki.
