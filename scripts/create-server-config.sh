@@ -62,5 +62,6 @@ echo "banlist=${banlist}" >> ${file}
 echo "secure=${secure}" >> ${file}
 echo "language=${language}" >> ${file}
 echo "upnp=${upnp}" >> ${file}
+echo "gns=${gns}" >> ${file}
 echo "npcstream=${npcstream}" >> ${file}
 echo "priority=${priority}" >> ${file};

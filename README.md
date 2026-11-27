@@ -145,6 +145,9 @@ To dettach without stopping the container:
 ### **Important!**
 If you want the server to start automatically on subsequent runs, you need to provide a world path to an existing world, by defining the environment variable `world` as shown in the exemple above.
 
+### **Important!**
+Terraria 1.4.6 added crossplay to the game which needs a new dependency GameNetworkingSockets to function, however, the arm64 version of this compoment is not included (as of 1.4.6.1) in the server package, which caused the server to crash after world loading. This compoment can be toggled using the environment variable `gns` and it is disabled by default in arm64.
+
 <br>
 
 ---
@@ -171,6 +174,7 @@ If you want the server to start automatically on subsequent runs, you need to pr
 | `secure` | `1` | Option to prevent cheats. (1: no cheats or 0: cheats allowed) | `secure=0` |
 | `language` | `en/US` | Sets the server language from its language code. Available codes:  `en/US = English` `de/DE = German` `it/IT = Italian` `fr/FR = French` `es/ES = Spanish` `ru/RU = Russian` `zh/Hans = Chinese` `pt/BR = Portuguese` `pl/PL = Polish` | `language=fr/FR` |
 | `upnp` | `1` | Enables/disables automatic universal plug and play. | `upnp=0` |
+| `gns` | `1` (amd64)<br />`0` (arm64) | Toggles GNS network compoment for crossplay | `gns=0` |
 | `npcstream` | `1` | Reduces enemy skipping but increases bandwidth usage. The lower the number the less skipping will happen, but more data is sent. 0 is off. | `npcstream=60` |
 | `priority` | (*empty*) | Sets the process priority | `priority=1` |
 
