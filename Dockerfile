@@ -39,6 +39,7 @@ ENV autocreate=1 \
     secure=1 \
     language=en/US \
     upnp=1 \
+    gns=1 \
     npcstream=1 \
     priority=1
 
@@ -71,6 +72,7 @@ ENV PATH="${TERRARIA_DIR}:${PATH}" \
     secure=1 \
     language=en/US \
     upnp=1 \
+    gns=0 \
     npcstream=1 \
     priority=1
 
